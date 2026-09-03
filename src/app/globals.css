@@ -34,7 +34,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --canvas: #100f0d;
     --surface: #191816;
     --inset: #201f1c;
@@ -54,6 +54,27 @@
     --has-ai-bg: #322817;
     --ai-native-bg: #1a2f22;
   }
+}
+
+:root[data-theme="dark"] {
+    --canvas: #100f0d;
+    --surface: #191816;
+    --inset: #201f1c;
+    --hover: #292824;
+
+    --ink: #eeece5;
+    --ink-2: #a19d92;
+    --ink-3: #736f66;
+
+    --line: #2c2b27;
+    --line-strong: #3d3b36;
+
+    --no-ai: #e08a70;
+    --has-ai: #d9b155;
+    --ai-native: #6dba89;
+    --no-ai-bg: #33201a;
+    --has-ai-bg: #322817;
+    --ai-native-bg: #1a2f22;
 }
 
 * { box-sizing: border-box; }
@@ -79,8 +100,8 @@ header.site h1 a { text-decoration: none; }
 header.site p { color: var(--ink-2); margin: 0; max-width: 62ch; font-size: 13px; }
 
 nav.site { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
-nav.site a { color: var(--ink-2); text-decoration: none; font-size: 12.5px; transition: color var(--t); }
-nav.site a:hover { color: var(--ink); }
+nav.site a:not(.btn) { color: var(--ink-2); text-decoration: none; font-size: 12.5px; transition: color var(--t); }
+nav.site a:not(.btn):hover { color: var(--ink); }
 
 .btn {
   display: inline-flex;
@@ -282,3 +303,35 @@ table.idx td.nm a { display: inline-flex; align-items: center; gap: 9px; }
 }
 .masthead a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; transition: color var(--t); }
 .masthead a:hover { color: var(--ink); }
+
+/* ---- footer ---- */
+
+footer.site {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 40px; padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px; color: var(--ink-2);
+}
+footer.site .by { flex: 1; }
+footer.site a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+
+.themes {
+  display: inline-flex; gap: 2px; padding: 2px;
+  border-radius: 999px;
+  background: var(--inset);
+  box-shadow: var(--ring);
+}
+.themes button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 26px;
+  border: 0; border-radius: 999px;
+  background: transparent; color: var(--ink-3);
+  cursor: pointer;
+  transition: background var(--t), color var(--t);
+}
+.themes button:hover { color: var(--ink-2); }
+.themes button[aria-pressed="true"] {
+  background: var(--surface); color: var(--ink);
+  box-shadow: var(--ring);
+}
+.themes svg { width: 14px; height: 14px; }

@@ -149,7 +149,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, Nov 2025',
     city: 'New York',
     industry: 'Fintech',
-    website: 'https://www.pace.com',
+    website: 'https://withpace.com/',
   },
   {
     name: 'Sendbird',
