@@ -87,6 +87,16 @@ const SEED: Seed[] = [
     website: 'https://llmh.com/',
   },
   {
+    name: 'Arca',
+    policy: 'ai_native',
+    process:
+      'No coding interview in the traditional sense. Paid contracting on real work, then a work trial, then an offer.\n\nAI tooling is assumed throughout, because it is how the team works day to day.',
+    sourceNote: 'Candidate report, Aug 2026',
+    website: 'https://arca.inc',
+    city: 'New York',
+    industry: 'Legal AI',
+  },
+  {
     name: 'Canva',
     policy: 'has_ai',
     process:
