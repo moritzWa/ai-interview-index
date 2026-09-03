@@ -185,13 +185,14 @@ export function CompanyList({ companies }: { companies: Company[] }) {
 
   return (
     <>
-      <p className="legend">
+      <ul className="legend">
         {POLICIES.map((p) => (
-          <span key={p}>
-            <span className={`k ${p}`}>{POLICY_LABELS[p]}</span> — {POLICY_BLURBS[p]}
-          </span>
+          <li key={p}>
+            <span className={`k ${p}`}>{POLICY_LABELS[p]}</span>
+            <span className="quiet">{POLICY_BLURBS[p]}</span>
+          </li>
         ))}
-      </p>
+      </ul>
 
       <div className="controls">
         <input

@@ -13,6 +13,8 @@ export type EditFormValues = {
   website: string
   city: string
   industry: string
+  /** Honeypot. Always empty for a person. */
+  url?: string
 }
 
 const EMPTY: EditFormValues = {
@@ -161,6 +163,18 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
           onChange={(e) => set('sourceNote', e.target.value)}
         />
       </label>
+
+      {/* Honeypot. Off-screen rather than display:none, which some bots skip. */}
+      <input
+        type="text"
+        name="url"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={values.url ?? ''}
+        onChange={(e) => set('url', e.target.value)}
+        style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+      />
 
       <Turnstile onToken={setToken} />
       {error && <p className="err">{error}</p>}

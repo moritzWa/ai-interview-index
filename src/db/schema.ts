@@ -12,9 +12,9 @@ export const POLICY_LABELS: Record<Policy, string> = {
 }
 
 export const POLICY_BLURBS: Record<Policy, string> = {
-  no_ai: 'AI tools are off the table in the technical rounds.',
-  has_ai: 'At least one round lets you use AI, but the format predates it.',
-  ai_native: 'The assessment was designed around working with AI.',
+  no_ai: 'Banned in the technical rounds.',
+  has_ai: 'Allowed in at least one round.',
+  ai_native: 'The interview is built around it.',
 }
 
 export const companies = pgTable(

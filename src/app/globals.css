@@ -221,7 +221,17 @@ table.idx td.policycol { width: 1%; padding-right: 12px; }
 .seg button[aria-pressed="true"].has_ai { background: var(--has-ai-bg); color: var(--has-ai); }
 .seg button[aria-pressed="true"].ai_native { background: var(--ai-native-bg); color: var(--ai-native); }
 
-.legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 18px; font-size: 12px; color: var(--ink-2); }
+.legend {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 20px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.legend li { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+@media (max-width: 820px) { .legend { grid-template-columns: 1fr; gap: 3px 0; } }
 .legend .k { font-weight: 580; }
 .legend .k.no_ai { color: var(--no-ai); }
 .legend .k.has_ai { color: var(--has-ai); }

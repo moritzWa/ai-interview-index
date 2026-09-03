@@ -21,6 +21,7 @@ export function editorHash(req: Request): string | null {
 
 const WINDOW_SECONDS = 10 * 60
 const MAX_PER_EDITOR = 8
+const SAME_COMPANY_COOLDOWN = 60 * 5
 const MAX_GLOBAL = 60
 
 /**
@@ -57,6 +58,28 @@ export async function rateLimited(hash: string | null): Promise<false | string> 
   }
 
   return false
+}
+
+/**
+ * One editor repeatedly rewriting the same entry is edit-warring, not contribution.
+ * Wikipedia's three-revert rule in miniature: after an edit, that editor leaves the
+ * entry alone for five minutes. Everyone else can still edit it, so a squatter
+ * cannot lock a row.
+ */
+export async function editingTooFast(hash: string | null, companyId: number): Promise<boolean> {
+  if (!hash) return false
+  const since = Math.floor(Date.now() / 1000) - SAME_COMPANY_COOLDOWN
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(revisions)
+    .where(
+      and(
+        gt(revisions.createdAt, since),
+        eq(revisions.editorHash, hash),
+        eq(revisions.companyId, companyId),
+      ),
+    )
+  return count > 0
 }
 
 /** No-ops when Turnstile isn't configured, so local dev needs no keys. */

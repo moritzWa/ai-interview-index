@@ -2,7 +2,8 @@ import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { companies, db, revisions } from '@/db'
 import { diffFields, parseEditable, slugify, type Editable } from '@/lib/companies'
-import { editorHash, rateLimited, turnstileOk } from '@/lib/editor'
+import { editingTooFast, editorHash, rateLimited, turnstileOk } from '@/lib/editor'
+import { honeypotTripped, screenEdit } from '@/lib/abuse'
 
 /**
  * Edits publish instantly — there is no moderation queue. What keeps that safe is
@@ -11,6 +12,10 @@ import { editorHash, rateLimited, turnstileOk } from '@/lib/editor'
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) return NextResponse.json({ error: 'Bad request.' }, { status: 400 })
+
+  // Answer a tripped honeypot exactly like a success, so a script has no signal to
+  // adapt to. Nothing is written.
+  if (honeypotTripped(body)) return NextResponse.json({ slug: 'ok' })
 
   const hash = editorHash(req)
   const limited = await rateLimited(hash)
@@ -43,6 +48,16 @@ export async function POST(req: Request) {
         industry: existing.industry,
       }
     : null
+
+  const refusal = screenEdit(before, parsed)
+  if (refusal) return NextResponse.json({ error: refusal }, { status: 422 })
+
+  if (existing && (await editingTooFast(hash, existing.id))) {
+    return NextResponse.json(
+      { error: 'You just edited this entry. Give it a few minutes before changing it again.' },
+      { status: 429 },
+    )
+  }
 
   const changed = diffFields(before, parsed)
   if (existing && changed.length === 0) {
