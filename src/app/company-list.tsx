@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import type { Company } from '@/db/schema'
 import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
 import { faviconUrl, logoDevUrl } from '@/lib/companies'
+import { getTurnstileToken } from '@/lib/turnstile-client'
 
 const SHORT: Record<Policy, string> = {
   no_ai: 'No AI',
@@ -25,6 +26,7 @@ function PolicyToggle({ company }: { company: Company }) {
     const previous = policy
     setPolicy(next)
     setBusy(true)
+    const turnstileToken = await getTurnstileToken()
     const res = await fetch('/api/edit', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -37,6 +39,7 @@ function PolicyToggle({ company }: { company: Company }) {
         sourceNote: company.sourceNote ?? '',
         city: company.city ?? '',
         industry: company.industry ?? '',
+        turnstileToken,
       }),
     })
     if (!res.ok) {

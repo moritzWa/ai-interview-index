@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
+import { getTurnstileToken } from '@/lib/turnstile-client'
 
 export type EditFormValues = {
   id?: number
@@ -28,30 +29,8 @@ const EMPTY: EditFormValues = {
   industry: '',
 }
 
-/** Renders the Turnstile widget only when a site key is configured. */
-function Turnstile({ onToken }: { onToken: (t: string) => void }) {
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!siteKey || !ref.current) return
-    const w = window as unknown as { turnstile?: { render: (el: Element, o: object) => void } }
-    const render = () => w.turnstile?.render(ref.current!, { sitekey: siteKey, callback: onToken })
-    if (w.turnstile) return render()
-    const s = document.createElement('script')
-    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
-    s.async = true
-    s.onload = render
-    document.head.appendChild(s)
-  }, [siteKey, onToken])
-
-  if (!siteKey) return null
-  return <div ref={ref} />
-}
-
 export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
   const [values, setValues] = useState(initial)
-  const [token, setToken] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -62,10 +41,11 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
     e.preventDefault()
     setSaving(true)
     setError(null)
+    const turnstileToken = await getTurnstileToken()
     const res = await fetch('/api/edit', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ...values, turnstileToken: token }),
+      body: JSON.stringify({ ...values, turnstileToken }),
     })
     const json = (await res.json()) as { slug?: string; error?: string }
     if (!res.ok || !json.slug) {
@@ -176,7 +156,6 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
         style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
       />
 
-      <Turnstile onToken={setToken} />
       {error && <p className="err">{error}</p>}
 
       <button className="btn" type="submit" disabled={saving}>
