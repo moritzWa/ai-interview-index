@@ -19,19 +19,19 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <p className="small muted" style={{ marginTop: 0 }}>
+      <p className="small quiet" style={{ marginTop: 0 }}>
         <a href="/">← All companies</a>
       </p>
-      <h2 style={{ fontSize: 24, margin: '0 0 6px' }}>{company.name}</h2>
+      <h2 className="page" style={{ fontSize: 20 }}>{company.name}</h2>
       <p style={{ margin: '0 0 24px' }}>
-        <span className={`tag ${company.policy}`}>{POLICY_LABELS[company.policy]}</span>{' '}
-        <span className="small muted">{POLICY_BLURBS[company.policy]}</span>
+        <span className={`k ${company.policy}`} style={{ fontWeight: 580 }}>{POLICY_LABELS[company.policy]}</span>{' '}
+        <span className="small quiet">{POLICY_BLURBS[company.policy]}</span>
       </p>
 
-      <p style={{ whiteSpace: 'pre-wrap' }}>{company.process || <em className="muted">No description yet.</em>}</p>
+      <p style={{ whiteSpace: 'pre-wrap' }}>{company.process || <em className="quiet">No description yet.</em>}</p>
 
       {(company.sourceUrl || company.sourceNote) && (
-        <p className="small muted">
+        <p className="small quiet">
           Source:{' '}
           {company.sourceUrl ? (
             <a href={company.sourceUrl} rel="noreferrer nofollow" target="_blank">

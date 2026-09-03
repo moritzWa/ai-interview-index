@@ -8,6 +8,7 @@ type Seed = {
   process: string
   sourceUrl?: string
   sourceNote?: string
+  website?: string
   city?: string
   industry?: string
 }
@@ -27,6 +28,7 @@ const SEED: Seed[] = [
     sourceNote: 'Sierra engineering blog, "The AI-native interview"',
     city: 'San Francisco',
     industry: 'AI agents',
+    website: 'https://sierra.ai',
   },
   {
     name: 'AngelList',
@@ -37,6 +39,7 @@ const SEED: Seed[] = [
     sourceNote: 'AngelList, "The Interview That Ships to Production"',
     city: 'San Francisco',
     industry: 'Fintech',
+    website: 'https://www.angellist.com',
   },
   {
     name: 'Cerebras',
@@ -47,6 +50,7 @@ const SEED: Seed[] = [
     sourceNote: 'Cerebras, "Hiring engineers for an AI-native world"',
     city: 'Sunnyvale',
     industry: 'AI hardware',
+    website: 'https://www.cerebras.ai',
   },
   {
     name: 'Cursor',
@@ -56,6 +60,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, Aug 2026',
     city: 'San Francisco',
     industry: 'Dev tools',
+    website: 'https://cursor.com',
   },
   {
     name: 'Crosby',
@@ -65,6 +70,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, onsite Aug 2026',
     city: 'New York',
     industry: 'Legal AI',
+    website: 'https://www.crosby.ai',
   },
   {
     name: 'Longlake',
@@ -74,6 +80,7 @@ const SEED: Seed[] = [
     sourceNote: 'Second-hand report from a contractor, 2026',
     city: 'New York',
     industry: 'Private equity',
+    website: 'https://www.longlake.com',
   },
   {
     name: 'Canva',
@@ -84,6 +91,7 @@ const SEED: Seed[] = [
     sourceNote: 'Canva engineering blog, "Yes, you can use AI in our interviews"',
     city: 'Sydney',
     industry: 'Design',
+    website: 'https://www.canva.com',
   },
   {
     name: 'Cognition',
@@ -93,6 +101,7 @@ const SEED: Seed[] = [
     sourceNote: 'Recruiter email, Aug 2026',
     city: 'San Francisco',
     industry: 'Dev tools',
+    website: 'https://cognition.ai',
   },
   {
     name: 'Poetic',
@@ -102,6 +111,7 @@ const SEED: Seed[] = [
     sourceNote: 'Recruiter email, Jul 2026',
     city: 'New York',
     industry: 'AI agents',
+    website: 'https://poetic.com',
   },
   {
     name: 'Augustus',
@@ -111,6 +121,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, Aug 2026',
     city: 'New York',
     industry: 'Fintech',
+    website: 'https://www.augustus.io',
   },
   {
     name: 'OpenEvidence',
@@ -119,6 +130,7 @@ const SEED: Seed[] = [
     sourceNote: 'Recruiter email, Aug 2026',
     city: 'Boston',
     industry: 'Health AI',
+    website: 'https://www.openevidence.com',
   },
   {
     name: 'Ramp',
@@ -128,6 +140,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, Nov 2025',
     city: 'New York',
     industry: 'Fintech',
+    website: 'https://ramp.com',
   },
   {
     name: 'Pace',
@@ -136,6 +149,7 @@ const SEED: Seed[] = [
     sourceNote: 'Candidate report, Nov 2025',
     city: 'New York',
     industry: 'Fintech',
+    website: 'https://www.pace.com',
   },
   {
     name: 'Sendbird',
@@ -145,6 +159,7 @@ const SEED: Seed[] = [
     sourceNote: 'Sendbird candidate experience page',
     city: 'San Francisco',
     industry: 'Developer APIs',
+    website: 'https://sendbird.com',
   },
   {
     name: 'Mirakl',
@@ -154,6 +169,7 @@ const SEED: Seed[] = [
     sourceNote: 'Mirakl careers page',
     city: 'Paris',
     industry: 'E-commerce',
+    website: 'https://www.mirakl.com',
   },
 ]
 
@@ -171,6 +187,7 @@ async function main() {
       process: s.process,
       sourceUrl: s.sourceUrl ?? null,
       sourceNote: s.sourceNote ?? null,
+      website: s.website ?? null,
       city: s.city ?? null,
       industry: s.industry ?? null,
     }

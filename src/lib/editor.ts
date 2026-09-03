@@ -1,4 +1,6 @@
 import { createHmac } from 'node:crypto'
+import { and, eq, gt, sql } from 'drizzle-orm'
+import { db, revisions } from '@/db'
 
 /**
  * We never store a raw IP. A plain hash of one is reversible by enumerating the
@@ -9,6 +11,7 @@ import { createHmac } from 'node:crypto'
 export function editorHash(req: Request): string | null {
   const secret = process.env.IP_HASH_SECRET
   const ip =
+    req.headers.get('x-nf-client-connection-ip') ??
     req.headers.get('cf-connecting-ip') ??
     req.headers.get('x-real-ip') ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
@@ -16,18 +19,44 @@ export function editorHash(req: Request): string | null {
   return createHmac('sha256', secret).update(ip).digest('hex').slice(0, 32)
 }
 
-const WINDOW_MS = 10 * 60 * 1000
-const MAX_EDITS = 12
-const hits = new Map<string, number[]>()
+const WINDOW_SECONDS = 10 * 60
+const MAX_PER_EDITOR = 8
+const MAX_GLOBAL = 60
 
-/** In-process limiter. Good enough for one box; swap for KV if this ever shards. */
-export function rateLimited(key: string | null): boolean {
-  if (!key) return false
-  const now = Date.now()
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS)
-  recent.push(now)
-  hits.set(key, recent)
-  return recent.length > MAX_EDITS
+/**
+ * Counted in Postgres rather than in memory, because the site runs on serverless
+ * functions: an in-process counter resets on every cold start and is per-instance,
+ * so a script that reconnects gets a fresh budget each time.
+ *
+ * Two ceilings. The per-editor one stops one address hammering the site; the global
+ * one caps the damage from a rotating pool of addresses, where per-editor limits are
+ * useless. Hitting the global ceiling degrades the site to read-only for a few
+ * minutes, which is recoverable, unlike a few thousand junk revisions.
+ */
+export async function rateLimited(hash: string | null): Promise<false | string> {
+  const since = Math.floor(Date.now() / 1000) - WINDOW_SECONDS
+
+  const [{ count: total }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(revisions)
+    .where(gt(revisions.createdAt, since))
+
+  if (total >= MAX_GLOBAL) {
+    return 'The site is getting an unusual number of edits and is briefly read-only. Try again in a few minutes.'
+  }
+
+  if (!hash) return false
+
+  const [{ count: mine }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(revisions)
+    .where(and(gt(revisions.createdAt, since), eq(revisions.editorHash, hash)))
+
+  if (mine >= MAX_PER_EDITOR) {
+    return `That is ${MAX_PER_EDITOR} edits in ten minutes. Slow down, or get in touch if you have a batch to add.`
+  }
+
+  return false
 }
 
 /** No-ops when Turnstile isn't configured, so local dev needs no keys. */

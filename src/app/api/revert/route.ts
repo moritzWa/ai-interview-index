@@ -16,9 +16,8 @@ export async function POST(req: Request) {
   }
 
   const hash = editorHash(req)
-  if (rateLimited(hash)) {
-    return NextResponse.json({ error: 'Too many edits, slow down a bit.' }, { status: 429 })
-  }
+  const limited = await rateLimited(hash)
+  if (limited) return NextResponse.json({ error: limited }, { status: 429 })
 
   const [rev] = await db.select().from(revisions).where(eq(revisions.id, revisionId)).limit(1)
   if (!rev) return NextResponse.json({ error: 'No such revision.' }, { status: 404 })
@@ -47,6 +46,7 @@ export async function POST(req: Request) {
       process: current.process,
       sourceUrl: current.sourceUrl,
       sourceNote: current.sourceNote,
+      website: current.website,
       city: current.city,
       industry: current.industry,
     }),

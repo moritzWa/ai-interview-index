@@ -2,41 +2,93 @@
 
 import { useMemo, useState } from 'react'
 import type { Company } from '@/db/schema'
-import { POLICIES, POLICY_LABELS, type Policy } from '@/db/schema'
+import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
+import { logoUrl } from '@/lib/companies'
 
-/** One dropdown per facet, in the shape VC portfolio pages use. */
-function Facet({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: string
-  options: string[]
-  onChange: (v: string) => void
-}) {
-  if (options.length === 0) return null
+const SHORT: Record<Policy, string> = {
+  no_ai: 'No AI',
+  has_ai: 'Has AI',
+  ai_native: 'AI-native',
+}
+
+/**
+ * The policy cell is the edit surface: clicking a segment reclassifies the company
+ * straight away, the same as any other edit, and lands in the changelog to be
+ * reverted if it is wrong.
+ */
+function PolicyToggle({ company }: { company: Company }) {
+  const [policy, setPolicy] = useState<Policy>(company.policy)
+  const [busy, setBusy] = useState(false)
+
+  async function choose(next: Policy) {
+    if (next === policy || busy) return
+    const previous = policy
+    setPolicy(next)
+    setBusy(true)
+    const res = await fetch('/api/edit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        id: company.id,
+        name: company.name,
+        policy: next,
+        process: company.process,
+        sourceUrl: company.sourceUrl ?? '',
+        sourceNote: company.sourceNote ?? '',
+        city: company.city ?? '',
+        industry: company.industry ?? '',
+      }),
+    })
+    if (!res.ok) {
+      const json = (await res.json()) as { error?: string }
+      setPolicy(previous)
+      alert(json.error ?? 'Could not save that change.')
+    }
+    setBusy(false)
+  }
+
   return (
-    <select
-      className="facet"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      aria-label={label}
-    >
-      <option value="">{label}</option>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
+    <div className="seg" role="group" aria-label={`Interview policy for ${company.name}`}>
+      {POLICIES.map((p) => (
+        <button
+          key={p}
+          type="button"
+          className={p}
+          aria-pressed={policy === p}
+          disabled={busy}
+          title={POLICY_BLURBS[p]}
+          onClick={() => choose(p)}
+        >
+          {SHORT[p]}
+        </button>
       ))}
-    </select>
+    </div>
+  )
+}
+
+/** Hidden rather than broken-image when the lookup misses, which is common for
+ * small or stealth companies. */
+function Logo({ company }: { company: Company }) {
+  const src = logoUrl(company.website, 40)
+  if (!src) return <span className="logo ph" aria-hidden />
+  return (
+    <img
+      className="logo"
+      src={src}
+      alt=""
+      width={20}
+      height={20}
+      loading="lazy"
+      onError={(e) => {
+        e.currentTarget.style.visibility = 'hidden'
+      }}
+    />
   )
 }
 
 export function CompanyList({ companies }: { companies: Company[] }) {
   const [q, setQ] = useState('')
-  const [active, setActive] = useState<Policy[]>([])
+  const [policy, setPolicy] = useState('')
   const [city, setCity] = useState('')
   const [industry, setIndustry] = useState('')
 
@@ -52,7 +104,7 @@ export function CompanyList({ companies }: { companies: Company[] }) {
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase()
     return companies.filter((c) => {
-      if (active.length && !active.includes(c.policy)) return false
+      if (policy && c.policy !== policy) return false
       if (city && c.city !== city) return false
       if (industry && c.industry !== industry) return false
       if (!needle) return true
@@ -60,15 +112,20 @@ export function CompanyList({ companies }: { companies: Company[] }) {
         .toLowerCase()
         .includes(needle)
     })
-  }, [companies, q, active, city, industry])
+  }, [companies, q, policy, city, industry])
 
-  const toggle = (p: Policy) =>
-    setActive((cur) => (cur.includes(p) ? cur.filter((x) => x !== p) : [...cur, p]))
-
-  const filtered = active.length > 0 || city || industry || q.trim()
+  const dirty = q.trim() || policy || city || industry
 
   return (
     <>
+      <p className="legend">
+        {POLICIES.map((p) => (
+          <span key={p}>
+            <span className={`k ${p}`}>{POLICY_LABELS[p]}</span> — {POLICY_BLURBS[p]}
+          </span>
+        ))}
+      </p>
+
       <div className="controls">
         <input
           type="search"
@@ -76,29 +133,41 @@ export function CompanyList({ companies }: { companies: Company[] }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <Facet label="Any location" value={city} options={cities} onChange={setCity} />
-        <Facet label="Any industry" value={industry} options={industries} onChange={setIndustry} />
-      </div>
-
-      <div className="controls" style={{ marginTop: 0 }}>
-        {POLICIES.map((p) => (
-          <button
-            key={p}
-            type="button"
-            className="chip"
-            aria-pressed={active.includes(p)}
-            onClick={() => toggle(p)}
+        <select value={policy} onChange={(e) => setPolicy(e.target.value)} aria-label="Policy">
+          <option value="">Any policy</option>
+          {POLICIES.map((p) => (
+            <option key={p} value={p}>
+              {POLICY_LABELS[p]}
+            </option>
+          ))}
+        </select>
+        {cities.length > 0 && (
+          <select value={city} onChange={(e) => setCity(e.target.value)} aria-label="Location">
+            <option value="">Any location</option>
+            {cities.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        )}
+        {industries.length > 0 && (
+          <select
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            aria-label="Industry"
           >
-            {POLICY_LABELS[p]}
-          </button>
-        ))}
-        {filtered && (
+            <option value="">Any industry</option>
+            {industries.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        )}
+        {dirty && (
           <button
             type="button"
             className="link"
             onClick={() => {
               setQ('')
-              setActive([])
+              setPolicy('')
               setCity('')
               setIndustry('')
             }}
@@ -106,35 +175,47 @@ export function CompanyList({ companies }: { companies: Company[] }) {
             clear
           </button>
         )}
-        <span className="small muted" style={{ marginLeft: 'auto' }}>
+        <span className="count">
           {shown.length} of {companies.length}
         </span>
       </div>
 
-      {shown.length === 0 ? (
-        <p className="muted small">
-          Nothing matches. <a href="/new">Add a company</a>.
-        </p>
-      ) : (
-        POLICIES.filter((p) => shown.some((c) => c.policy === p)).map((p) => (
-          <section key={p}>
-            <h2 className="group-head">
-              <span className={`tag ${p}`}>{POLICY_LABELS[p]}</span>
-            </h2>
-            <div className="rows">
-              {shown
-                .filter((c) => c.policy === p)
-                .map((c) => (
-                  <a className="row" key={c.id} href={`/c/${c.slug}`}>
-                    <span className="nm">{c.name}</span>
-                    <span className="pr">{c.process.split('\n')[0]}</span>
-                    {c.city && <span className="meta">{c.city}</span>}
+      <div className="tablewrap">
+        <table className="idx">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Technical process</th>
+              <th>Location</th>
+              <th className="policycol">AI in interviews</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.length === 0 && (
+              <tr>
+                <td colSpan={4} className="quiet" style={{ padding: '22px 14px' }}>
+                  Nothing matches those filters. <a href="/new">Add a company</a>.
+                </td>
+              </tr>
+            )}
+            {shown.map((c) => (
+              <tr key={c.id}>
+                <td className="nm">
+                  <a href={`/c/${c.slug}`}>
+                    <Logo company={c} />
+                    {c.name}
                   </a>
-                ))}
-            </div>
-          </section>
-        ))
-      )}
+                </td>
+                <td className="pr">{c.process.split('\n')[0]}</td>
+                <td className="meta">{c.city ?? '—'}</td>
+                <td className="policycol">
+                  <PolicyToggle company={c} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }

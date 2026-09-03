@@ -1,31 +1,22 @@
 import { asc } from 'drizzle-orm'
-import { companies, db, POLICIES, POLICY_BLURBS, POLICY_LABELS } from '@/db'
+import { companies, db } from '@/db'
 import { CompanyList } from './company-list'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const all = await db.select().from(companies).orderBy(asc(companies.name))
-  const counts = Object.fromEntries(
-    POLICIES.map((p) => [p, all.filter((c) => c.policy === p).length]),
-  ) as Record<(typeof POLICIES)[number], number>
 
   return (
     <>
-      <p className="small muted" style={{ marginTop: 0 }}>
-        {POLICIES.map((p, i) => (
-          <span key={p}>
-            {i > 0 && ' · '}
-            <span className={`tag ${p}`}>{POLICY_LABELS[p]}</span> {counts[p]} —{' '}
-            {POLICY_BLURBS[p]}
-          </span>
-        ))}
-      </p>
       <CompanyList companies={all} />
 
       <div className="footer-cta">
-        <p>Interviewed somewhere that is not listed? It takes a minute and needs no account.</p>
-        <a className="primary" href="/new" style={{ textDecoration: 'none' }}>
+        <p>
+          Interviewed somewhere that is not listed, or spotted something wrong? Every field is
+          editable and no account is needed.
+        </p>
+        <a className="btn" href="/new">
           Submit a company
         </a>
       </div>

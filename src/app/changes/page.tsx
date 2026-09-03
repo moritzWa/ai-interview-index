@@ -15,18 +15,18 @@ export default async function Changes() {
 
   return (
     <>
-      <h2 style={{ fontSize: 20, marginBottom: 4 }}>Recent changes</h2>
-      <p className="muted small" style={{ marginTop: 0 }}>
+      <h2 className="page">Recent changes</h2>
+      <p className="quiet small" style={{ margin: "0 0 16px" }}>
         Every edit, newest first. Anything that looks wrong can be reverted in one click.
       </p>
-      <div style={{ borderTop: '1px solid var(--line)' }}>
-        {rows.length === 0 && <p className="muted small">Nothing yet.</p>}
+      <div className="card" style={{ padding: 0 }}>
+        {rows.length === 0 && <p className="quiet small" style={{ padding: 14 }}>Nothing yet.</p>}
         {rows.map(({ rev, company }) => (
           <div className="change" key={rev.id}>
             <span className="when">{when(rev.createdAt)}</span>
             <span className="small" style={{ flex: 1 }}>
               <a href={`/c/${company.slug}`}>{company.name}</a>{' '}
-              <span className="muted">{rev.summary}</span>
+              <span className="quiet">{rev.summary}</span>
             </span>
             {rev.before && <RevertButton revisionId={rev.id} />}
           </div>

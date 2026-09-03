@@ -13,9 +13,8 @@ export async function POST(req: Request) {
   if (!body) return NextResponse.json({ error: 'Bad request.' }, { status: 400 })
 
   const hash = editorHash(req)
-  if (rateLimited(hash)) {
-    return NextResponse.json({ error: 'Too many edits, slow down a bit.' }, { status: 429 })
-  }
+  const limited = await rateLimited(hash)
+  if (limited) return NextResponse.json({ error: limited }, { status: 429 })
   if (!(await turnstileOk(String(body.turnstileToken ?? '') || null))) {
     return NextResponse.json({ error: 'Bot check failed, reload and retry.' }, { status: 403 })
   }
@@ -39,6 +38,7 @@ export async function POST(req: Request) {
         process: existing.process,
         sourceUrl: existing.sourceUrl,
         sourceNote: existing.sourceNote,
+        website: existing.website,
         city: existing.city,
         industry: existing.industry,
       }

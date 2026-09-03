@@ -21,6 +21,7 @@ export function CompanyDetail({ company, history }: { company: Company; history:
               process: company.process,
               sourceUrl: company.sourceUrl ?? '',
               sourceNote: company.sourceNote ?? '',
+              website: company.website ?? '',
               city: company.city ?? '',
               industry: company.industry ?? '',
             }}
@@ -32,13 +33,13 @@ export function CompanyDetail({ company, history }: { company: Company; history:
           </p>
         </div>
       ) : (
-        <button className="primary" type="button" onClick={() => setEditing(true)}>
+        <button className="btn" type="button" onClick={() => setEditing(true)}>
           Edit this entry
         </button>
       )}
 
-      <h3 className="group-head">History</h3>
-      <div>
+      <h3 className="section">History</h3>
+      <div className="card" style={{ padding: 0 }}>
         {history.map((r) => (
           <div className="change" key={r.id}>
             <span className="when">{when(r.createdAt)}</span>

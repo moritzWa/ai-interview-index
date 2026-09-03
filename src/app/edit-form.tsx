@@ -10,6 +10,7 @@ export type EditFormValues = {
   process: string
   sourceUrl: string
   sourceNote: string
+  website: string
   city: string
   industry: string
 }
@@ -20,6 +21,7 @@ const EMPTY: EditFormValues = {
   process: '',
   sourceUrl: '',
   sourceNote: '',
+  website: '',
   city: '',
   industry: '',
 }
@@ -93,7 +95,18 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
             </option>
           ))}
         </select>
-        <span className="small muted">{POLICY_BLURBS[values.policy]}</span>
+        <span className="small quiet">{POLICY_BLURBS[values.policy]}</span>
+      </label>
+
+      <label>
+        Website
+        <input
+          type="url"
+          placeholder="https://company.com"
+          value={values.website}
+          onChange={(e) => set('website', e.target.value)}
+        />
+        <span className="small quiet">Used to show the company logo.</span>
       </label>
 
       <div className="pair">
@@ -124,7 +137,7 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
           placeholder="E.g. 45min CoderPad screen, no AI allowed. Then a 4h onsite: system design, two coding rounds, hiring manager."
           onChange={(e) => set('process', e.target.value)}
         />
-        <span className="small muted">
+        <span className="small quiet">
           First line shows in the list, so lead with the short version.
         </span>
       </label>
@@ -152,10 +165,10 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
       <Turnstile onToken={setToken} />
       {error && <p className="err">{error}</p>}
 
-      <button className="primary" type="submit" disabled={saving}>
+      <button className="btn" type="submit" disabled={saving}>
         {saving ? 'Saving…' : values.id ? 'Save changes' : 'Add company'}
       </button>
-      <p className="small muted" style={{ margin: 0 }}>
+      <p className="small quiet" style={{ margin: 0 }}>
         Publishes immediately. No account needed. Your edit appears in{' '}
         <a href="/changes">recent changes</a> and anyone can revert it.
       </p>
