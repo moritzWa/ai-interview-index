@@ -80,7 +80,7 @@ const SEED: Seed[] = [
     sourceNote: 'Second-hand report from a contractor, 2026',
     city: 'New York',
     industry: 'Private equity',
-    website: 'https://www.longlake.com',
+    website: 'https://llmh.com/',
   },
   {
     name: 'Canva',
