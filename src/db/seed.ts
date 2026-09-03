@@ -44,9 +44,22 @@ const SEED: Seed[] = [
     name: 'Cursor',
     policy: 'ai_native',
     process:
-      'No traditional non-AI coding round.\n\nProcess is a career deep-dive, a system design round, and a project. Cursor has described a two-day onsite where candidates simulate building real products end to end in the codebase.',
-    sourceUrl: 'https://sierra.ai/blog/the-ai-native-interview',
-    sourceNote: 'Candidate report, 2026; format also described publicly by the CEO',
+      'No non-AI coding round in the loop.\n\nRecruiter screen, then three rounds: 60min systems design on a whiteboard, 45min technical deep dive on prior work, and a 45min career walkthrough. The recruiter described the technical portion as work-sample rather than pure algorithms.',
+    sourceNote: 'Candidate report, Aug 2026',
+  },
+  {
+    name: 'Crosby',
+    policy: 'has_ai',
+    process:
+      'Splits the signals explicitly: two separate coding rounds on the same day.\n\nA 1h "Backend Build" in CoderPad with AI switched off, and a 1h "AI-Assisted Interview" where using it is the point. The rest of the onsite is a hiring manager screen, a project deep dive, and conversational rounds.',
+    sourceNote: 'Candidate report, onsite Aug 2026',
+  },
+  {
+    name: 'Longlake',
+    policy: 'has_ai',
+    process:
+      'One round where AI is allowed and a separate round where it is not, deliberately run as two different signals.\n\nAlso a behavioral round and a case study: propose an acquisition and defend it.',
+    sourceNote: 'Second-hand report from a contractor, 2026',
   },
   {
     name: 'Canva',
@@ -60,8 +73,28 @@ const SEED: Seed[] = [
     name: 'Cognition',
     policy: 'no_ai',
     process:
-      'First screen is a Python problem in CoderPad with no AI allowed.\n\nA later round is a one-hour project built in their own IDE.',
-    sourceNote: 'Candidate report, 2025-2026',
+      'Self-serve CoderPad assessment as step one, roughly 1-1.5 hours, no AI allowed.\n\nThe follow-up round is a Python debugging interview.',
+    sourceNote: 'Recruiter email, Aug 2026',
+  },
+  {
+    name: 'Poetic',
+    policy: 'no_ai',
+    process:
+      'A 45-minute practical programming problem, explicitly not algorithmic, in any language.\n\nThe recruiter\'s framing: no LLMs allowed for most of it, though you can search for language documentation.',
+    sourceNote: 'Recruiter email, Jul 2026',
+  },
+  {
+    name: 'Augustus',
+    policy: 'no_ai',
+    process:
+      'The screen was a 1h remote pair-programming round in TypeScript, algorithmic, no AI.\n\nOne candidate pushed back on the no-AI constraint and they dropped the coding round entirely, substituting a practical system design conversation about past work. So the default is no AI, but it has been negotiated.',
+    sourceNote: 'Candidate report, Aug 2026',
+  },
+  {
+    name: 'OpenEvidence',
+    policy: 'no_ai',
+    process: 'One-hour LeetCode-style coding interview after the recruiter call.',
+    sourceNote: 'Recruiter email, Aug 2026',
   },
   {
     name: 'Ramp',
@@ -75,6 +108,20 @@ const SEED: Seed[] = [
     policy: 'no_ai',
     process: 'LeetCode-style screen. No AI assistance.',
     sourceNote: 'Candidate report, Nov 2025',
+  },
+  {
+    name: 'Sendbird',
+    policy: 'no_ai',
+    process: 'AI use is prohibited by default in technical assessments, per their published candidate policy.',
+    sourceUrl: 'https://sendbird.com/careers/candidate-experience',
+    sourceNote: 'Sendbird candidate experience page',
+  },
+  {
+    name: 'Mirakl',
+    policy: 'no_ai',
+    process: 'AI use is prohibited by default in technical assessments, per their published careers policy.',
+    sourceUrl: 'https://www.mirakl.com/company/careers/',
+    sourceNote: 'Mirakl careers page',
   },
 ]
 
