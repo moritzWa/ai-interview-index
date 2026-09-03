@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
+import { MAX_RESOURCES, type Resource } from '@/lib/companies'
 import { getTurnstileToken } from '@/lib/turnstile-client'
 
 export type EditFormValues = {
@@ -14,6 +15,7 @@ export type EditFormValues = {
   website: string
   city: string
   industry: string
+  resources: Resource[]
   /** Honeypot. Always empty for a person. */
   url?: string
 }
@@ -27,6 +29,7 @@ const EMPTY: EditFormValues = {
   website: '',
   city: '',
   industry: '',
+  resources: [],
 }
 
 export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
@@ -36,6 +39,13 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
 
   const set = <K extends keyof EditFormValues>(k: K, v: EditFormValues[K]) =>
     setValues((cur) => ({ ...cur, [k]: v }))
+
+  const setResource = (i: number, r: Resource) =>
+    setValues((cur) => ({ ...cur, resources: cur.resources.map((x, n) => (n === i ? r : x)) }))
+  const addResource = () =>
+    setValues((cur) => ({ ...cur, resources: [...cur.resources, { url: '', title: '' }] }))
+  const removeResource = (i: number) =>
+    setValues((cur) => ({ ...cur, resources: cur.resources.filter((_, n) => n !== i) }))
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -123,6 +133,38 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
           First line shows in the list, so lead with the short version.
         </span>
       </label>
+
+      <fieldset className="resources">
+        <legend>Links about their stance (optional)</legend>
+        <p className="small quiet" style={{ margin: '0 0 8px' }}>
+          Their engineering blog, a careers page, a press interview. These show on the
+          company&apos;s page.
+        </p>
+        {values.resources.map((r, i) => (
+          <div className="pair" key={i}>
+            <input
+              type="url"
+              placeholder="https://company.com/blog/post"
+              value={r.url}
+              onChange={(e) => setResource(i, { ...r, url: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="What it is"
+              value={r.title}
+              onChange={(e) => setResource(i, { ...r, title: e.target.value })}
+            />
+            <button type="button" className="link" onClick={() => removeResource(i)}>
+              remove
+            </button>
+          </div>
+        ))}
+        {values.resources.length < MAX_RESOURCES && (
+          <button type="button" className="link" onClick={addResource}>
+            + add a link
+          </button>
+        )}
+      </fieldset>
 
       <label>
         Source link (optional)

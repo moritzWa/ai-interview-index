@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Company, Revision } from '@/db/schema'
+import { parseResources } from '@/lib/companies'
 import { EditForm } from '../../edit-form'
 import { when } from '@/lib/time'
 import { RevertButton } from '../../changes/revert-button'
@@ -24,6 +25,7 @@ export function CompanyDetail({ company, history }: { company: Company; history:
               website: company.website ?? '',
               city: company.city ?? '',
               industry: company.industry ?? '',
+              resources: parseResources(company.resources),
             }}
           />
           <p style={{ marginBottom: 0 }}>

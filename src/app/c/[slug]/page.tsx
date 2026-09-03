@@ -1,9 +1,18 @@
 import { desc, eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import { companies, db, POLICY_BLURBS, POLICY_LABELS, revisions } from '@/db'
+import { parseResources } from '@/lib/companies'
 import { CompanyDetail } from './detail'
 
 export const dynamic = 'force-dynamic'
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
 
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -16,6 +25,8 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     .where(eq(revisions.companyId, company.id))
     .orderBy(desc(revisions.createdAt))
     .limit(20)
+
+  const resources = parseResources(company.resources)
 
   return (
     <>
@@ -41,6 +52,22 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
             company.sourceNote
           )}
         </p>
+      )}
+
+      {resources.length > 0 && (
+        <>
+          <h3 className="section">What they have said</h3>
+          <ul className="reslist">
+            {resources.map((r) => (
+              <li key={r.url}>
+                <a href={r.url} target="_blank" rel="noreferrer nofollow">
+                  {r.title || r.url}
+                </a>
+                <span className="quiet small"> {hostOf(r.url)}</span>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <CompanyDetail company={company} history={history} />

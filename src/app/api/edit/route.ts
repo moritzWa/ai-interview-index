@@ -43,6 +43,7 @@ export async function POST(req: Request) {
         process: existing.process,
         sourceUrl: existing.sourceUrl,
         sourceNote: existing.sourceNote,
+        resources: existing.resources,
         website: existing.website,
         city: existing.city,
         industry: existing.industry,

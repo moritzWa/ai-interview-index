@@ -29,6 +29,12 @@ export const companies = pgTable(
     /** Where this came from: a blog post, a careers page, or "candidate report". */
     sourceUrl: text('source_url'),
     sourceNote: text('source_note'),
+    /**
+     * Links about this company's stance, as a JSON array of { url, title }. Kept on
+     * the row rather than in a join table so one revision snapshot still captures
+     * the whole editable state, which is what makes revert a single write.
+     */
+    resources: text('resources'),
     /** Company homepage. Its hostname is also the key for the logo lookup. */
     website: text('website'),
     /** Free-text facets, for the VC-portfolio-style filter row. */

@@ -8,6 +8,7 @@ type Seed = {
   process: string
   sourceUrl?: string
   sourceNote?: string
+  resources?: { url: string; title: string }[]
   website?: string
   city?: string
   industry?: string
@@ -29,6 +30,7 @@ const SEED: Seed[] = [
     city: 'San Francisco',
     industry: 'AI agents',
     website: 'https://sierra.ai',
+    resources: [{ url: 'https://sierra.ai/blog/the-ai-native-interview', title: 'The AI-native interview' }],
   },
   {
     name: 'AngelList',
@@ -40,6 +42,7 @@ const SEED: Seed[] = [
     city: 'San Francisco',
     industry: 'Fintech',
     website: 'https://www.angellist.com',
+    resources: [{ url: 'https://www.angellist.com/blog/the-interview-that-ships-to-production', title: 'The Interview That Ships to Production' }],
   },
   {
     name: 'Cerebras',
@@ -51,6 +54,7 @@ const SEED: Seed[] = [
     city: 'Sunnyvale',
     industry: 'AI hardware',
     website: 'https://www.cerebras.ai',
+    resources: [{ url: 'https://www.cerebras.ai/blog/hiring-engineers-for-an-ai-native-world', title: 'Hiring engineers for an AI-native world' }],
   },
   {
     name: 'Cursor',
@@ -92,6 +96,7 @@ const SEED: Seed[] = [
     city: 'Sydney',
     industry: 'Design',
     website: 'https://www.canva.com',
+    resources: [{ url: 'https://www.canva.dev/blog/engineering/yes-you-can-use-ai-in-our-interviews/', title: 'Yes, you can use AI in our interviews' }],
   },
   {
     name: 'Cognition',
@@ -160,6 +165,7 @@ const SEED: Seed[] = [
     city: 'San Francisco',
     industry: 'Developer APIs',
     website: 'https://sendbird.com',
+    resources: [{ url: 'https://sendbird.com/careers/candidate-experience', title: 'Candidate experience: AI use policy' }],
   },
   {
     name: 'Mirakl',
@@ -170,6 +176,7 @@ const SEED: Seed[] = [
     city: 'Paris',
     industry: 'E-commerce',
     website: 'https://www.mirakl.com',
+    resources: [{ url: 'https://www.mirakl.com/company/careers/', title: 'Careers page: assessment policy' }],
   },
 ]
 
@@ -187,6 +194,7 @@ async function main() {
       process: s.process,
       sourceUrl: s.sourceUrl ?? null,
       sourceNote: s.sourceNote ?? null,
+      resources: s.resources ? JSON.stringify(s.resources) : null,
       website: s.website ?? null,
       city: s.city ?? null,
       industry: s.industry ?? null,
