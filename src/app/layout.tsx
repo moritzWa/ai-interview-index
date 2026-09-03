@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeToggle } from './theme-toggle'
+import { SITE_URL } from '@/lib/site'
 
 /** Emoji favicon, inlined as SVG so there is no binary asset to keep in sync. */
 const FAVICON =
@@ -9,11 +10,26 @@ const FAVICON =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🦾</text></svg>',
   )
 
+const DESCRIPTION =
+  'Which companies let you use AI in their coding interviews, which ban it, and which built the interview around it. A public, editable index with sources.'
+
 export const metadata: Metadata = {
-  title: 'AI Interview Index',
-  description:
-    'Which companies let you use AI in their coding interviews, which ban it, and which built the interview around it.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'AI Interview Index: which companies allow AI in coding interviews',
+    template: '%s — AI Interview Index',
+  },
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
   icons: { icon: FAVICON },
+  openGraph: {
+    type: 'website',
+    siteName: 'AI Interview Index',
+    title: 'Which companies allow AI in coding interviews',
+    description: DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: { card: 'summary', title: 'AI Interview Index', description: DESCRIPTION },
 }
 
 /**

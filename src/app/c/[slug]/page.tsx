@@ -1,7 +1,9 @@
 import { desc, eq } from 'drizzle-orm'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { companies, db, POLICY_BLURBS, POLICY_LABELS, revisions } from '@/db'
 import { parseResources } from '@/lib/companies'
+import { SITE_URL } from '@/lib/site'
 import { CompanyDetail } from './detail'
 
 export const dynamic = 'force-dynamic'
@@ -11,6 +13,26 @@ function hostOf(url: string): string {
     return new URL(url).hostname.replace(/^www\./, '')
   } catch {
     return ''
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const [company] = await db.select().from(companies).where(eq(companies.slug, slug)).limit(1)
+  if (!company) return { title: 'Not found' }
+
+  const title = `Does ${company.name} allow AI in interviews?`
+  const description = `${company.name}: ${POLICY_LABELS[company.policy]}. ${company.process.split('\n')[0]}`.slice(0, 300)
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/c/${company.slug}` },
+    openGraph: { title, description, url: `${SITE_URL}/c/${company.slug}`, type: 'article' },
   }
 }
 
@@ -28,8 +50,27 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
 
   const resources = parseResources(company.resources)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Does ${company.name} allow AI in coding interviews?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${POLICY_LABELS[company.policy]}. ${company.process}`,
+        },
+      },
+    ],
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <p className="small quiet" style={{ marginTop: 0 }}>
         <a href="/">← All companies</a>
       </p>
