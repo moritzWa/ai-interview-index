@@ -35,6 +35,38 @@ export function slugify(name: string): string {
     .slice(0, 60)
 }
 
+/**
+ * Fields a caller may omit to mean "leave unchanged". Without this, any client that
+ * posts a partial record silently nulls everything it did not send — which is how
+ * the inline policy toggle wiped a company's website.
+ */
+export const EDITABLE_KEYS = [
+  'name',
+  'policy',
+  'process',
+  'sourceUrl',
+  'sourceNote',
+  'resources',
+  'website',
+  'city',
+  'industry',
+] as const
+
+/** Fills absent keys from the current row, so a partial post is a partial update. */
+export function mergeWithExisting(
+  body: Record<string, unknown>,
+  existing: Editable | null,
+): Record<string, unknown> {
+  if (!existing) return body
+  const merged: Record<string, unknown> = { ...body }
+  if (!('resources' in body)) merged.resources = parseResources(existing.resources)
+  for (const k of EDITABLE_KEYS) {
+    if (k === 'resources') continue
+    if (!(k in body) || body[k] === undefined) merged[k] = existing[k] ?? ''
+  }
+  return merged
+}
+
 export function parseEditable(input: unknown): Editable | { error: string } {
   const f = input as Record<string, unknown>
   const name = String(f?.name ?? '').trim()

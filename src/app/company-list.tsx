@@ -30,17 +30,8 @@ function PolicyToggle({ company }: { company: Company }) {
     const res = await fetch('/api/edit', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        id: company.id,
-        name: company.name,
-        policy: next,
-        process: company.process,
-        sourceUrl: company.sourceUrl ?? '',
-        sourceNote: company.sourceNote ?? '',
-        city: company.city ?? '',
-        industry: company.industry ?? '',
-        turnstileToken,
-      }),
+      // Only the field being changed. Everything omitted is left as-is server-side.
+      body: JSON.stringify({ id: company.id, policy: next, turnstileToken }),
     })
     if (!res.ok) {
       const json = (await res.json()) as { error?: string }

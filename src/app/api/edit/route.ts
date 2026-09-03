@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { companies, db, revisions } from '@/db'
-import { diffFields, parseEditable, slugify, type Editable } from '@/lib/companies'
+import { diffFields, mergeWithExisting, parseEditable, slugify, type Editable } from '@/lib/companies'
 import { editingTooFast, editorHash, rateLimited, turnstileOk } from '@/lib/editor'
 import { honeypotTripped, screenEdit } from '@/lib/abuse'
 
@@ -23,9 +23,6 @@ export async function POST(req: Request) {
   if (!(await turnstileOk(String(body.turnstileToken ?? '') || null))) {
     return NextResponse.json({ error: 'Bot check failed, reload and retry.' }, { status: 403 })
   }
-
-  const parsed = parseEditable(body)
-  if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
   const existingId = typeof body.id === 'number' ? body.id : null
   const existing = existingId
@@ -50,15 +47,18 @@ export async function POST(req: Request) {
       }
     : null
 
-  const refusal = screenEdit(before, parsed)
-  if (refusal) return NextResponse.json({ error: refusal }, { status: 422 })
-
   if (existing && (await editingTooFast(hash, existing.id))) {
     return NextResponse.json(
       { error: 'You just edited this entry. Give it a few minutes before changing it again.' },
       { status: 429 },
     )
   }
+
+  const parsed = parseEditable(mergeWithExisting(body, before))
+  if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+  const refusal = screenEdit(before, parsed)
+  if (refusal) return NextResponse.json({ error: refusal }, { status: 422 })
 
   const changed = diffFields(before, parsed)
   if (existing && changed.length === 0) {
