@@ -15,17 +15,16 @@ One label per company, deliberately:
 
 ## Stack
 
-Next.js 15 (App Router) + TypeScript + Drizzle on libSQL. Local dev is a SQLite
-file, production points at Turso. No database daemon to leave running.
+Next.js 15 (App Router) + TypeScript + Drizzle on Postgres (Neon), deployed on
+Netlify. Live at https://ai-interview-index.netlify.app
 
 ## Running it
 
 ```bash
 bun install
-cp .env.example .env.local
-bun run db:push     # create tables in local.db
-bun run db:seed     # insert the starting companies
-bun run dev         # http://localhost:3077
+cp .env.example .env      # fill in DATABASE_URL
+bun run db:seed           # insert the starting companies
+bun run dev               # http://localhost:3077
 ```
 
 ## How editing works
@@ -51,17 +50,17 @@ is used for rate limiting and abuse cleanup and is never displayed.
 
 ## Deploying
 
-Vercel plus a Turso database:
-
 ```bash
-turso db create ai-interview-index
-turso db show ai-interview-index --url        # -> DATABASE_URL
-turso db tokens create ai-interview-index     # -> DATABASE_AUTH_TOKEN
+bun run deploy    # netlify deploy --build --prod
 ```
 
-Set `DATABASE_URL`, `DATABASE_AUTH_TOKEN`, `IP_HASH_SECRET` and optionally the
-two Turnstile keys in the Vercel project, then `bun run db:push` and
-`bun run db:seed` against the remote URL once.
+`DATABASE_URL` and `IP_HASH_SECRET` are already set on the Netlify project.
+
+Schema changes go through `bunx drizzle-kit generate`, then move the generated
+`.sql` into `netlify/database/migrations/<timestamp>_<name>/migration.sql` and
+apply it with `psql "$DATABASE_URL" -f <that file>`. Drizzle writes a flat file;
+Netlify expects one directory per migration.
+
 
 ## Rate limiter caveat
 
