@@ -47,6 +47,8 @@ export async function POST(req: Request) {
       process: current.process,
       sourceUrl: current.sourceUrl,
       sourceNote: current.sourceNote,
+      city: current.city,
+      industry: current.industry,
     }),
     after: JSON.stringify(restore),
     summary: `reverted revision #${rev.id}`,

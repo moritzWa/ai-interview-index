@@ -6,6 +6,8 @@ export type Editable = {
   process: string
   sourceUrl: string | null
   sourceNote: string | null
+  city: string | null
+  industry: string | null
 }
 
 export function slugify(name: string): string {
@@ -23,18 +25,38 @@ export function parseEditable(input: unknown): Editable | { error: string } {
   const process = String(f?.process ?? '').trim()
   const sourceUrl = String(f?.sourceUrl ?? '').trim()
   const sourceNote = String(f?.sourceNote ?? '').trim()
+  const city = String(f?.city ?? '').trim()
+  const industry = String(f?.industry ?? '').trim()
 
   if (name.length < 2 || name.length > 80) return { error: 'Company name must be 2-80 characters.' }
   if (!POLICIES.includes(policy)) return { error: 'Pick one of the three categories.' }
   if (process.length > 2000) return { error: 'Keep the process description under 2000 characters.' }
   if (sourceNote.length > 300) return { error: 'Keep the source note under 300 characters.' }
   if (sourceUrl && !/^https?:\/\/\S+$/.test(sourceUrl)) return { error: 'Source must be a http(s) URL.' }
+  if (city.length > 60) return { error: 'Keep the location under 60 characters.' }
+  if (industry.length > 60) return { error: 'Keep the industry under 60 characters.' }
 
-  return { name, policy, process, sourceUrl: sourceUrl || null, sourceNote: sourceNote || null }
+  return {
+    name,
+    policy,
+    process,
+    sourceUrl: sourceUrl || null,
+    sourceNote: sourceNote || null,
+    city: city || null,
+    industry: industry || null,
+  }
 }
 
 export function diffFields(before: Editable | null, after: Editable): string[] {
   if (!before) return ['added']
-  const keys: (keyof Editable)[] = ['name', 'policy', 'process', 'sourceUrl', 'sourceNote']
+  const keys: (keyof Editable)[] = [
+    'name',
+    'policy',
+    'process',
+    'sourceUrl',
+    'sourceNote',
+    'city',
+    'industry',
+  ]
   return keys.filter((k) => before[k] !== after[k])
 }

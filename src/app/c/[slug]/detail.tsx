@@ -21,6 +21,8 @@ export function CompanyDetail({ company, history }: { company: Company; history:
               process: company.process,
               sourceUrl: company.sourceUrl ?? '',
               sourceNote: company.sourceNote ?? '',
+              city: company.city ?? '',
+              industry: company.industry ?? '',
             }}
           />
           <p style={{ marginBottom: 0 }}>

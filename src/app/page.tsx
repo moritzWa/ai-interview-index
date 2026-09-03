@@ -22,6 +22,13 @@ export default async function Home() {
         ))}
       </p>
       <CompanyList companies={all} />
+
+      <div className="footer-cta">
+        <p>Interviewed somewhere that is not listed? It takes a minute and needs no account.</p>
+        <a className="primary" href="/new" style={{ textDecoration: 'none' }}>
+          Submit a company
+        </a>
+      </div>
     </>
   )
 }

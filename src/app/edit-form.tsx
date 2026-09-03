@@ -10,6 +10,8 @@ export type EditFormValues = {
   process: string
   sourceUrl: string
   sourceNote: string
+  city: string
+  industry: string
 }
 
 const EMPTY: EditFormValues = {
@@ -18,6 +20,8 @@ const EMPTY: EditFormValues = {
   process: '',
   sourceUrl: '',
   sourceNote: '',
+  city: '',
+  industry: '',
 }
 
 /** Renders the Turnstile widget only when a site key is configured. */
@@ -91,6 +95,27 @@ export function EditForm({ initial = EMPTY }: { initial?: EditFormValues }) {
         </select>
         <span className="small muted">{POLICY_BLURBS[values.policy]}</span>
       </label>
+
+      <div className="pair">
+        <label>
+          Location
+          <input
+            type="text"
+            placeholder="New York, Remote, SF…"
+            value={values.city}
+            onChange={(e) => set('city', e.target.value)}
+          />
+        </label>
+        <label>
+          Industry
+          <input
+            type="text"
+            placeholder="Legal AI, fintech, dev tools…"
+            value={values.industry}
+            onChange={(e) => set('industry', e.target.value)}
+          />
+        </label>
+      </div>
 
       <label>
         What the process looks like

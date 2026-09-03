@@ -24,8 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </p>
             <nav className="site">
               <a href="/">Companies</a>
-              <a href="/new">Add a company</a>
               <a href="/changes">Recent changes</a>
+              <a className="cta" href="/new">
+                Submit a company
+              </a>
             </nav>
           </header>
           {children}

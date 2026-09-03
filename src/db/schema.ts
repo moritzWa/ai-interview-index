@@ -29,6 +29,9 @@ export const companies = sqliteTable(
     /** Where this came from: a blog post, a careers page, or "candidate report". */
     sourceUrl: text('source_url'),
     sourceNote: text('source_note'),
+    /** Free-text facets, for the VC-portfolio-style filter row. */
+    city: text('city'),
+    industry: text('industry'),
     updatedAt: integer('updated_at')
       .notNull()
       .default(sql`(unixepoch())`),
