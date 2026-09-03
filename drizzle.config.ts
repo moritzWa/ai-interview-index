@@ -2,10 +2,9 @@ import type { Config } from 'drizzle-kit'
 
 export default {
   schema: './src/db/schema.ts',
-  out: './drizzle',
-  dialect: 'turso',
+  out: './netlify/database/migrations',
+  dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? 'file:./local.db',
-    authToken: process.env.DATABASE_AUTH_TOKEN,
+    url: process.env.NETLIFY_DATABASE_URL ?? process.env.DATABASE_URL ?? '',
   },
 } satisfies Config

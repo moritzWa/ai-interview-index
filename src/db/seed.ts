@@ -160,7 +160,7 @@ const SEED: Seed[] = [
 async function main() {
   for (const s of SEED) {
     const slug = slugify(s.name)
-    const existing = await db.select().from(companies).all()
+    const existing = await db.select().from(companies)
     if (existing.some((c) => c.slug === slug)) {
       console.log(`skip  ${s.name}`)
       continue

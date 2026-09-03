@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { index, integer, pgTable, serial, text } from 'drizzle-orm/pg-core'
 
 /** The three buckets. One label per company — deliberately simple. */
 export const POLICIES = ['no_ai', 'has_ai', 'ai_native'] as const
@@ -17,10 +17,10 @@ export const POLICY_BLURBS: Record<Policy, string> = {
   ai_native: 'The assessment was designed around working with AI.',
 }
 
-export const companies = sqliteTable(
+export const companies = pgTable(
   'companies',
   {
-    id: integer('id').primaryKey({ autoIncrement: true }),
+    id: serial('id').primaryKey(),
     slug: text('slug').notNull().unique(),
     name: text('name').notNull(),
     policy: text('policy').$type<Policy>().notNull(),
@@ -34,7 +34,7 @@ export const companies = sqliteTable(
     industry: text('industry'),
     updatedAt: integer('updated_at')
       .notNull()
-      .default(sql`(unixepoch())`),
+      .default(sql`extract(epoch from now())::int`),
   },
   (t) => [index('companies_policy_idx').on(t.policy)],
 )
@@ -43,10 +43,10 @@ export const companies = sqliteTable(
  * Every write appends a row here before touching `companies`, so any edit can be
  * reverted from the public changelog. `create` rows carry a null `before`.
  */
-export const revisions = sqliteTable(
+export const revisions = pgTable(
   'revisions',
   {
-    id: integer('id').primaryKey({ autoIncrement: true }),
+    id: serial('id').primaryKey(),
     companyId: integer('company_id')
       .notNull()
       .references(() => companies.id, { onDelete: 'cascade' }),
@@ -59,7 +59,7 @@ export const revisions = sqliteTable(
     editorHash: text('editor_hash'),
     createdAt: integer('created_at')
       .notNull()
-      .default(sql`(unixepoch())`),
+      .default(sql`extract(epoch from now())::int`),
   },
   (t) => [index('revisions_created_idx').on(t.createdAt)],
 )

@@ -8,11 +8,13 @@
     "start": "next start -p 3077",
     "db:push": "drizzle-kit push",
     "db:seed": "bun run src/db/seed.ts",
-    "deploy": "netlify deploy --build --prod"
+    "deploy": "netlify deploy --build --prod",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.4",
-    "drizzle-orm": "^0.44.2",
+    "@neondatabase/serverless": "^1.1.0",
+    "@netlify/database": "^2.0.1",
+    "drizzle-orm": "^0.45.2",
     "next": "^15.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
