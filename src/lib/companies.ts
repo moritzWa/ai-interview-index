@@ -66,21 +66,29 @@ export function diffFields(before: Editable | null, after: Editable): string[] {
   return keys.filter((k) => before[k] !== after[k])
 }
 
-/**
- * Logos come from logo.dev, keyed by the company's own domain. Without a token it
- * 401s, so fall back to the favicon service, which needs no key — the index should
- * still look finished on a fresh clone.
- */
-export function logoUrl(website: string | null, size = 40): string | null {
+/** The hostname a logo lookup is keyed on, or null if the URL is unusable. */
+export function logoHost(website: string | null): string | null {
   if (!website) return null
-  let host: string
   try {
-    host = new URL(website).hostname.replace(/^www\./, '')
+    return new URL(website).hostname.replace(/^www\./, '')
   } catch {
     return null
   }
+}
+
+/**
+ * Favicon first: it is the mark a company actually ships for small dark chrome, so
+ * it survives dark mode, where many logo.dev wordmarks are black-on-transparent and
+ * disappear. logo.dev is the fallback for the hosts that ship nothing usable.
+ */
+export function faviconUrl(website: string | null, size = 64): string | null {
+  const host = logoHost(website)
+  return host ? `https://www.google.com/s2/favicons?domain=${host}&sz=${size}` : null
+}
+
+export function logoDevUrl(website: string | null, size = 40): string | null {
+  const host = logoHost(website)
   const token = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN
-  return token
-    ? `https://img.logo.dev/${host}?token=${token}&size=${size}&format=png&retina=true`
-    : `https://www.google.com/s2/favicons?domain=${host}&sz=64`
+  if (!host || !token) return null
+  return `https://img.logo.dev/${host}?token=${token}&size=${size}&format=png&retina=true`
 }

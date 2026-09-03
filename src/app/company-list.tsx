@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import type { Company } from '@/db/schema'
 import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
-import { logoUrl } from '@/lib/companies'
+import { faviconUrl, logoDevUrl } from '@/lib/companies'
 
 const SHORT: Record<Policy, string> = {
   no_ai: 'No AI',
@@ -66,11 +66,20 @@ function PolicyToggle({ company }: { company: Company }) {
   )
 }
 
-/** Hidden rather than broken-image when the lookup misses, which is common for
- * small or stealth companies. */
+/**
+ * Favicon first, logo.dev second, then nothing. Each step only runs when the one
+ * before it actually fails to load, so a company with a usable favicon never costs
+ * a logo.dev lookup.
+ */
 function Logo({ company }: { company: Company }) {
-  const src = logoUrl(company.website, 40)
+  const [step, setStep] = useState(0)
+  const sources = [faviconUrl(company.website), logoDevUrl(company.website)].filter(
+    Boolean,
+  ) as string[]
+
+  const src = sources[step]
   if (!src) return <span className="logo ph" aria-hidden />
+
   return (
     <img
       className="logo"
@@ -79,10 +88,42 @@ function Logo({ company }: { company: Company }) {
       width={20}
       height={20}
       loading="lazy"
-      onError={(e) => {
-        e.currentTarget.style.visibility = 'hidden'
-      }}
+      onError={() => setStep((n) => n + 1)}
     />
+  )
+}
+
+type SortKey = 'name' | 'process' | 'city' | 'policy'
+
+/** Groups the three policies in escalating order rather than alphabetically, so
+ * sorting the column reads as a spectrum instead of "ai_native, has_ai, no_ai". */
+const POLICY_ORDER: Record<Policy, number> = { no_ai: 0, has_ai: 1, ai_native: 2 }
+
+function SortHeader({
+  label,
+  column,
+  sort,
+  dir,
+  onSort,
+  align,
+}: {
+  label: string
+  column: SortKey
+  sort: SortKey
+  dir: 1 | -1
+  onSort: (c: SortKey) => void
+  align?: 'right'
+}) {
+  const active = sort === column
+  return (
+    <th className={align === 'right' ? 'policycol' : undefined} aria-sort={active ? (dir === 1 ? 'ascending' : 'descending') : 'none'}>
+      <button type="button" className="sorth" onClick={() => onSort(column)}>
+        {label}
+        <span className="caret" aria-hidden>
+          {active ? (dir === 1 ? '\u2191' : '\u2193') : ''}
+        </span>
+      </button>
+    </th>
   )
 }
 
@@ -91,6 +132,17 @@ export function CompanyList({ companies }: { companies: Company[] }) {
   const [policy, setPolicy] = useState('')
   const [city, setCity] = useState('')
   const [industry, setIndustry] = useState('')
+  const [sort, setSort] = useState<SortKey>('name')
+  const [dir, setDir] = useState<1 | -1>(1)
+
+  /** Clicking the active column flips direction; a new column starts ascending. */
+  function onSort(next: SortKey) {
+    if (next === sort) setDir((d) => (d === 1 ? -1 : 1))
+    else {
+      setSort(next)
+      setDir(1)
+    }
+  }
 
   const cities = useMemo(
     () => [...new Set(companies.map((c) => c.city).filter(Boolean) as string[])].sort(),
@@ -103,7 +155,7 @@ export function CompanyList({ companies }: { companies: Company[] }) {
 
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return companies.filter((c) => {
+    const matched = companies.filter((c) => {
       if (policy && c.policy !== policy) return false
       if (city && c.city !== city) return false
       if (industry && c.industry !== industry) return false
@@ -112,7 +164,22 @@ export function CompanyList({ companies }: { companies: Company[] }) {
         .toLowerCase()
         .includes(needle)
     })
-  }, [companies, q, policy, city, industry])
+
+    const value = (c: Company) =>
+      sort === 'policy' ? POLICY_ORDER[c.policy] : (c[sort] ?? '').toString().toLowerCase()
+
+    return [...matched].sort((a, b) => {
+      const av = value(a)
+      const bv = value(b)
+      // Rows missing a city sort last in both directions rather than clumping at
+      // whichever end an empty string happens to land on.
+      if (av === '' && bv !== '') return 1
+      if (bv === '' && av !== '') return -1
+      if (av < bv) return -dir
+      if (av > bv) return dir
+      return a.name.localeCompare(b.name)
+    })
+  }, [companies, q, policy, city, industry, sort, dir])
 
   const dirty = q.trim() || policy || city || industry
 
@@ -184,10 +251,23 @@ export function CompanyList({ companies }: { companies: Company[] }) {
         <table className="idx">
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Technical process</th>
-              <th>Location</th>
-              <th className="policycol">AI in interviews</th>
+              <SortHeader label="Company" column="name" sort={sort} dir={dir} onSort={onSort} />
+              <SortHeader
+                label="Technical process"
+                column="process"
+                sort={sort}
+                dir={dir}
+                onSort={onSort}
+              />
+              <SortHeader label="Location" column="city" sort={sort} dir={dir} onSort={onSort} />
+              <SortHeader
+                label="AI in interviews"
+                column="policy"
+                sort={sort}
+                dir={dir}
+                onSort={onSort}
+                align="right"
+              />
             </tr>
           </thead>
           <tbody>
