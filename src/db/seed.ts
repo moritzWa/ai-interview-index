@@ -54,7 +54,7 @@ const SEED: Seed[] = [
   {
     name: "Augustus",
     policy: "no_ai",
-    process: "No coding interview at all, in practice.\n\nThe screen was originally a 1h remote pair-programming round in TypeScript, algorithmic, no AI. A candidate pushed back on the no-AI constraint and they dropped the coding round entirely, replacing it with a practical system design conversation about past work. That loop ended in an offer.",
+    process: "The default screen is a 1h remote pair-programming round in TypeScript, algorithmic, with no AI.\n\nOne candidate pushed back on the no-AI constraint and they dropped the coding round entirely, replacing it with a practical system design conversation about past work. That loop ended in an offer.",
     sourceNote: "Candidate report, Aug 2026",
     website: "https://augustus.com/",
     city: "New York",
