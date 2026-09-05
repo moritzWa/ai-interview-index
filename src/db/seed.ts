@@ -17,7 +17,7 @@ type Seed = {
 /**
  * Generated from the live database. Companies come from two places: published
  * policies (engineering blogs, careers pages, handbooks) and first-hand candidate
- * reports. Everything here is editable on the site — a starting point, not a ruling.
+ * reports. Everything here is editable on the site.
  */
 const SEED: Seed[] = [
   {
@@ -83,6 +83,7 @@ const SEED: Seed[] = [
     process: "AI tools are permitted in interviews. Candidates are expected to explain and defend what the tools produced.",
     sourceUrl: "https://www.canva.dev/blog/engineering/yes-you-can-use-ai-in-our-interviews/",
     sourceNote: "Canva engineering blog, \"Yes, you can use AI in our interviews\"",
+    website: "https://www.canva.com",
     city: "Sydney",
     industry: "Design",
     resources: [
@@ -188,6 +189,15 @@ const SEED: Seed[] = [
     resources: [
       { url: "https://handbook.gitlab.com/handbook/hiring/interviewing/technical/", title: "Technical interviewing handbook" },
     ],
+  },
+  {
+    name: "Hanover Park",
+    policy: "ai_native",
+    process: "Triage on a real codebase: a long list of reported issues, some genuine and some not, to prioritise and fix in limited time.\n\nAI tooling is assumed throughout. The signal is what you choose to work on and what you correctly ignore, not how fast you can type a fix. Earlier rounds are an office visit with the CEO and a 90-minute session covering system design.",
+    sourceNote: "Candidate report, Aug 2026",
+    website: "https://www.hanoverpark.com",
+    city: "New York",
+    industry: "Fund administration",
   },
   {
     name: "Kogan.com",
@@ -419,11 +429,8 @@ async function main() {
     }
     const [created] = await db.insert(companies).values({ ...payload, slug }).returning()
     await db.insert(revisions).values({
-      companyId: created.id,
-      kind: 'create',
-      before: null,
-      after: JSON.stringify(payload),
-      summary: 'seeded',
+      companyId: created.id, kind: 'create', before: null,
+      after: JSON.stringify(payload), summary: 'seeded',
     })
     console.log(`added ${s.name}`)
   }
