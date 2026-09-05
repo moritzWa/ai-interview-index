@@ -279,7 +279,7 @@ export function CompanyList({ companies }: { companies: Company[] }) {
               {header('Company', 'name')}
               {header('Technical process', 'process')}
               {header('Location', 'city')}
-              {header('AI in interviews', 'policy', 'text-right')}
+              {header('AI in interviews', 'policy', 'pr-3 text-right')}
             </TableRow>
           </TableHeader>
           <TableBody>
