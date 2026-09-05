@@ -5,17 +5,59 @@ import type { Company } from '@/db/schema'
 import { POLICIES, POLICY_BLURBS, POLICY_LABELS, type Policy } from '@/db/schema'
 import { faviconUrl, logoDevUrl } from '@/lib/companies'
 import { getTurnstileToken } from '@/lib/turnstile-client'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-const SHORT: Record<Policy, string> = {
-  no_ai: 'No AI',
-  has_ai: 'Has AI',
-  ai_native: 'AI-native',
+const SHORT: Record<Policy, string> = { no_ai: 'No AI', has_ai: 'Has AI', ai_native: 'AI-native' }
+
+const ACTIVE: Record<Policy, string> = {
+  no_ai: 'bg-no-ai-bg text-no-ai',
+  has_ai: 'bg-has-ai-bg text-has-ai',
+  ai_native: 'bg-ai-native-bg text-ai-native',
+}
+
+const LABEL_COLOR: Record<Policy, string> = {
+  no_ai: 'text-no-ai',
+  has_ai: 'text-has-ai',
+  ai_native: 'text-ai-native',
+}
+
+/** Favicon first, logo.dev second, then a placeholder. Each step only runs when
+ * the one before it fails, so a usable favicon costs no logo.dev lookup. */
+function Logo({ company }: { company: Company }) {
+  const [step, setStep] = useState(0)
+  const sources = [faviconUrl(company.website), logoDevUrl(company.website)].filter(
+    Boolean,
+  ) as string[]
+  const src = sources[step]
+
+  if (!src) return <span className="size-5 shrink-0 rounded-sm bg-muted ring-1 ring-border" />
+  return (
+    <img
+      src={src}
+      alt=""
+      width={20}
+      height={20}
+      loading="lazy"
+      onError={() => setStep((n) => n + 1)}
+      className="size-5 shrink-0 rounded-sm bg-muted object-contain"
+    />
+  )
 }
 
 /**
- * The policy cell is the edit surface: clicking a segment reclassifies the company
- * straight away, the same as any other edit, and lands in the changelog to be
- * reverted if it is wrong.
+ * The policy cell is the edit surface: choosing a segment reclassifies the company
+ * straight away and lands in the changelog like any other edit.
  */
 function PolicyToggle({ company }: { company: Company }) {
   const [policy, setPolicy] = useState<Policy>(company.policy)
@@ -42,16 +84,26 @@ function PolicyToggle({ company }: { company: Company }) {
   }
 
   return (
-    <div className="seg" role="group" aria-label={`Interview policy for ${company.name}`}>
+    <div
+      className="inline-flex gap-0.5 rounded-md bg-muted p-0.5 ring-1 ring-border"
+      role="group"
+      aria-label={`Interview policy for ${company.name}`}
+    >
       {POLICIES.map((p) => (
         <button
           key={p}
           type="button"
-          className={p}
           aria-pressed={policy === p}
           disabled={busy}
           title={POLICY_BLURBS[p]}
           onClick={() => choose(p)}
+          className={cn(
+            'rounded-sm px-2 py-0.5 text-[11.5px] font-medium whitespace-nowrap transition-colors',
+            policy === p
+              ? ACTIVE[p]
+              : 'text-faint hover:bg-accent hover:text-muted-foreground',
+            busy && 'cursor-progress',
+          )}
         >
           {SHORT[p]}
         </button>
@@ -60,83 +112,18 @@ function PolicyToggle({ company }: { company: Company }) {
   )
 }
 
-/**
- * Favicon first, logo.dev second, then nothing. Each step only runs when the one
- * before it actually fails to load, so a company with a usable favicon never costs
- * a logo.dev lookup.
- */
-function Logo({ company }: { company: Company }) {
-  const [step, setStep] = useState(0)
-  const sources = [faviconUrl(company.website), logoDevUrl(company.website)].filter(
-    Boolean,
-  ) as string[]
-
-  const src = sources[step]
-  if (!src) return <span className="logo ph" aria-hidden />
-
-  return (
-    <img
-      className="logo"
-      src={src}
-      alt=""
-      width={20}
-      height={20}
-      loading="lazy"
-      onError={() => setStep((n) => n + 1)}
-    />
-  )
-}
-
 type SortKey = 'name' | 'process' | 'city' | 'policy'
 
-/** Groups the three policies in escalating order rather than alphabetically, so
- * sorting the column reads as a spectrum instead of "ai_native, has_ai, no_ai". */
+/** Escalating rather than alphabetical, so sorting reads as a spectrum. */
 const POLICY_ORDER: Record<Policy, number> = { no_ai: 0, has_ai: 1, ai_native: 2 }
-
-function SortHeader({
-  label,
-  column,
-  sort,
-  dir,
-  onSort,
-  align,
-}: {
-  label: string
-  column: SortKey
-  sort: SortKey
-  dir: 1 | -1
-  onSort: (c: SortKey) => void
-  align?: 'right'
-}) {
-  const active = sort === column
-  return (
-    <th className={align === 'right' ? 'policycol' : undefined} aria-sort={active ? (dir === 1 ? 'ascending' : 'descending') : 'none'}>
-      <button type="button" className="sorth" onClick={() => onSort(column)}>
-        {label}
-        <span className="caret" aria-hidden>
-          {active ? (dir === 1 ? '\u2191' : '\u2193') : ''}
-        </span>
-      </button>
-    </th>
-  )
-}
 
 export function CompanyList({ companies }: { companies: Company[] }) {
   const [q, setQ] = useState('')
-  const [policy, setPolicy] = useState('')
-  const [city, setCity] = useState('')
-  const [industry, setIndustry] = useState('')
+  const [policy, setPolicy] = useState('all')
+  const [city, setCity] = useState('all')
+  const [industry, setIndustry] = useState('all')
   const [sort, setSort] = useState<SortKey>('name')
   const [dir, setDir] = useState<1 | -1>(1)
-
-  /** Clicking the active column flips direction; a new column starts ascending. */
-  function onSort(next: SortKey) {
-    if (next === sort) setDir((d) => (d === 1 ? -1 : 1))
-    else {
-      setSort(next)
-      setDir(1)
-    }
-  }
 
   const cities = useMemo(
     () => [...new Set(companies.map((c) => c.city).filter(Boolean) as string[])].sort(),
@@ -147,12 +134,21 @@ export function CompanyList({ companies }: { companies: Company[] }) {
     [companies],
   )
 
+  /** Clicking the active column flips direction; a new column starts ascending. */
+  function onSort(next: SortKey) {
+    if (next === sort) setDir((d) => (d === 1 ? -1 : 1))
+    else {
+      setSort(next)
+      setDir(1)
+    }
+  }
+
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase()
     const matched = companies.filter((c) => {
-      if (policy && c.policy !== policy) return false
-      if (city && c.city !== city) return false
-      if (industry && c.industry !== industry) return false
+      if (policy !== 'all' && c.policy !== policy) return false
+      if (city !== 'all' && c.city !== city) return false
+      if (industry !== 'all' && c.industry !== industry) return false
       if (!needle) return true
       return `${c.name} ${c.process} ${c.city ?? ''} ${c.industry ?? ''}`
         .toLowerCase()
@@ -175,127 +171,155 @@ export function CompanyList({ companies }: { companies: Company[] }) {
     })
   }, [companies, q, policy, city, industry, sort, dir])
 
-  const dirty = q.trim() || policy || city || industry
+  const dirty = q.trim() !== '' || policy !== 'all' || city !== 'all' || industry !== 'all'
+
+  const header = (label: string, column: SortKey, className?: string) => (
+    <TableHead
+      className={className}
+      aria-sort={sort === column ? (dir === 1 ? 'ascending' : 'descending') : 'none'}
+    >
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className={cn(
+          'inline-flex items-center gap-1 transition-colors hover:text-foreground',
+          className?.includes('text-right') && 'flex-row-reverse',
+        )}
+      >
+        {label}
+        <span aria-hidden className="w-2 text-[9px] text-muted-foreground">
+          {sort === column ? (dir === 1 ? '↑' : '↓') : ''}
+        </span>
+      </button>
+    </TableHead>
+  )
 
   return (
     <>
-      <ul className="legend">
+      <ul className="mb-4 grid list-none grid-cols-1 gap-x-5 p-0 text-xs md:grid-cols-3">
         {POLICIES.map((p) => (
-          <li key={p}>
-            <span className={`k ${p}`}>{POLICY_LABELS[p]}</span>
-            <span className="quiet">{POLICY_BLURBS[p]}</span>
+          <li key={p} className="flex min-w-0 items-baseline gap-1.5">
+            <span className={cn('font-semibold', LABEL_COLOR[p])}>{POLICY_LABELS[p]}</span>
+            <span className="text-faint">{POLICY_BLURBS[p]}</span>
           </li>
         ))}
       </ul>
 
-      <div className="controls">
-        <input
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Input
           type="search"
           placeholder="Search companies…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
+          className="h-8 min-w-40 flex-1 text-xs"
         />
-        <select value={policy} onChange={(e) => setPolicy(e.target.value)} aria-label="Policy">
-          <option value="">Any policy</option>
-          {POLICIES.map((p) => (
-            <option key={p} value={p}>
-              {POLICY_LABELS[p]}
-            </option>
-          ))}
-        </select>
-        {cities.length > 0 && (
-          <select value={city} onChange={(e) => setCity(e.target.value)} aria-label="Location">
-            <option value="">Any location</option>
+        <Select value={policy} onValueChange={setPolicy}>
+          <SelectTrigger size="sm" className="text-xs" aria-label="Policy">
+            <SelectValue placeholder="Any policy" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any policy</SelectItem>
+            {POLICIES.map((p) => (
+              <SelectItem key={p} value={p}>
+                {POLICY_LABELS[p]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={city} onValueChange={setCity}>
+          <SelectTrigger size="sm" className="text-xs" aria-label="Location">
+            <SelectValue placeholder="Any location" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any location</SelectItem>
             {cities.map((c) => (
-              <option key={c}>{c}</option>
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
             ))}
-          </select>
-        )}
-        {industries.length > 0 && (
-          <select
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value)}
-            aria-label="Industry"
-          >
-            <option value="">Any industry</option>
+          </SelectContent>
+        </Select>
+        <Select value={industry} onValueChange={setIndustry}>
+          <SelectTrigger size="sm" className="text-xs" aria-label="Industry">
+            <SelectValue placeholder="Any industry" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any industry</SelectItem>
             {industries.map((c) => (
-              <option key={c}>{c}</option>
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
             ))}
-          </select>
-        )}
+          </SelectContent>
+        </Select>
         {dirty && (
-          <button
-            type="button"
-            className="link"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-muted-foreground"
             onClick={() => {
               setQ('')
-              setPolicy('')
-              setCity('')
-              setIndustry('')
+              setPolicy('all')
+              setCity('all')
+              setIndustry('all')
             }}
           >
-            clear
-          </button>
+            Clear
+          </Button>
         )}
-        <span className="count">
+        <span className="ml-auto text-xs tabular-nums text-faint">
           {shown.length} of {companies.length}
         </span>
       </div>
 
-      <div className="tablewrap">
-        <table className="idx">
-          <thead>
-            <tr>
-              <SortHeader label="Company" column="name" sort={sort} dir={dir} onSort={onSort} />
-              <SortHeader
-                label="Technical process"
-                column="process"
-                sort={sort}
-                dir={dir}
-                onSort={onSort}
-              />
-              <SortHeader label="Location" column="city" sort={sort} dir={dir} onSort={onSort} />
-              <SortHeader
-                label="AI in interviews"
-                column="policy"
-                sort={sort}
-                dir={dir}
-                onSort={onSort}
-                align="right"
-              />
-            </tr>
-          </thead>
-          <tbody>
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/60 hover:bg-muted/60">
+              {header('Company', 'name')}
+              {header('Technical process', 'process')}
+              {header('Location', 'city')}
+              {header('AI in interviews', 'policy', 'text-right')}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {shown.length === 0 && (
-              <tr>
-                <td colSpan={4} className="quiet" style={{ padding: '22px 14px' }}>
+              <TableRow>
+                <TableCell colSpan={4} className="py-6 text-faint">
                   Nothing matches those filters. <a href="/new">Add a company</a>.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
             {shown.map((c) => (
-              <tr key={c.id}>
-                <td className="nm">
-                  <a href={`/c/${c.slug}`}>
+              <TableRow key={c.id}>
+                <TableCell className="w-px font-semibold whitespace-nowrap">
+                  <a href={`/c/${c.slug}`} className="inline-flex items-center gap-2.5">
                     <Logo company={c} />
                     {c.name}
                   </a>
-                </td>
-                <td className="pr">
-                  {/* Clamped rather than truncated in JS so the ellipsis lands on a
-                      real line break at whatever width the table happens to be. */}
-                  <span className="clamp" title={c.process.split('\n')[0]}>
-                    {c.process.split('\n')[0]}
-                  </span>
-                </td>
-                <td className="meta">{c.city ?? '—'}</td>
-                <td className="policycol">
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {/* Clamped in CSS so the ellipsis lands on a real line break
+                          at whatever width the table happens to be. */}
+                      <span className="line-clamp-2">{c.process.split('\n')[0]}</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-sm">
+                      {c.process.split('\n')[0]}
+                    </TooltipContent>
+                  </Tooltip>
+                </TableCell>
+                <TableCell className="w-px text-xs whitespace-nowrap text-faint">
+                  {c.city ?? '—'}
+                </TableCell>
+                <TableCell className="w-px pr-3 text-right">
                   <PolicyToggle company={c} />
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </>
   )

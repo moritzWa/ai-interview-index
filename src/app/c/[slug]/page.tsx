@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { companies, db, POLICY_BLURBS, POLICY_LABELS, revisions } from '@/db'
 import { parseResources } from '@/lib/companies'
 import { SITE_URL } from '@/lib/site'
+import { cn } from '@/lib/utils'
 import { CompanyDetail } from './detail'
 
 export const dynamic = 'force-dynamic'
@@ -15,6 +16,12 @@ function hostOf(url: string): string {
     return ''
   }
 }
+
+const LABEL_COLOR = {
+  no_ai: 'text-no-ai',
+  has_ai: 'text-has-ai',
+  ai_native: 'text-ai-native',
+} as const
 
 export async function generateMetadata({
   params,
@@ -71,47 +78,74 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <p className="small quiet" style={{ marginTop: 0 }}>
-        <a href="/">← All companies</a>
-      </p>
-      <h2 className="page" style={{ fontSize: 20 }}>{company.name}</h2>
-      <p style={{ margin: '0 0 24px' }}>
-        <span className={`k ${company.policy}`} style={{ fontWeight: 580 }}>{POLICY_LABELS[company.policy]}</span>{' '}
-        <span className="small quiet">{POLICY_BLURBS[company.policy]}</span>
-      </p>
 
-      <p style={{ whiteSpace: 'pre-wrap' }}>{company.process || <em className="quiet">No description yet.</em>}</p>
+      <a
+        href="/"
+        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        ← All companies
+      </a>
 
-      {(company.sourceUrl || company.sourceNote) && (
-        <p className="small quiet">
-          Source:{' '}
-          {company.sourceUrl ? (
-            <a href={company.sourceUrl} rel="noreferrer nofollow" target="_blank">
-              {company.sourceNote || new URL(company.sourceUrl).hostname}
-            </a>
-          ) : (
-            company.sourceNote
-          )}
+      <div className="mt-4 max-w-2xl">
+        <h2 className="text-xl font-semibold tracking-tight">{company.name}</h2>
+        <p className="mt-1 text-xs">
+          <span className={cn('font-semibold', LABEL_COLOR[company.policy])}>
+            {POLICY_LABELS[company.policy]}
+          </span>{' '}
+          <span className="text-faint">{POLICY_BLURBS[company.policy]}</span>
         </p>
-      )}
 
-      {resources.length > 0 && (
-        <>
-          <h3 className="section">What they have said</h3>
-          <ul className="reslist">
-            {resources.map((r) => (
-              <li key={r.url}>
-                <a href={r.url} target="_blank" rel="noreferrer nofollow">
-                  {r.title || r.url}
-                </a>
-                <span className="quiet small"> {hostOf(r.url)}</span>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+        <div className="mt-6 space-y-4 text-[13.5px] leading-relaxed">
+          {company.process ? (
+            company.process.split('\n\n').map((para, i) => <p key={i}>{para}</p>)
+          ) : (
+            <p className="text-faint italic">No description yet.</p>
+          )}
+        </div>
 
-      <CompanyDetail company={company} history={history} />
+        {(company.sourceUrl || company.sourceNote) && (
+          <p className="mt-5 text-xs text-faint">
+            Source:{' '}
+            {company.sourceUrl ? (
+              <a
+                className="underline underline-offset-2 hover:text-foreground"
+                href={company.sourceUrl}
+                rel="noreferrer nofollow"
+                target="_blank"
+              >
+                {company.sourceNote || hostOf(company.sourceUrl)}
+              </a>
+            ) : (
+              company.sourceNote
+            )}
+          </p>
+        )}
+
+        {resources.length > 0 && (
+          <section className="mt-9">
+            <h3 className="mb-3 text-[11px] font-medium tracking-widest text-faint uppercase">
+              What they have said
+            </h3>
+            <ul className="space-y-2.5">
+              {resources.map((r) => (
+                <li key={r.url} className="flex flex-wrap items-baseline gap-x-2">
+                  <a
+                    className="underline underline-offset-2"
+                    href={r.url}
+                    target="_blank"
+                    rel="noreferrer nofollow"
+                  >
+                    {r.title || r.url}
+                  </a>
+                  <span className="text-xs text-faint">{hostOf(r.url)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <CompanyDetail company={company} history={history} />
+      </div>
     </>
   )
 }

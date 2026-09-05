@@ -1,7 +1,8 @@
 import { asc } from 'drizzle-orm'
 import { companies, db } from '@/db'
-import { CompanyList } from './company-list'
 import { SITE_URL } from '@/lib/site'
+import { Button } from '@/components/ui/button'
+import { CompanyList } from './company-list'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,14 +39,14 @@ export default async function Home() {
       />
       <CompanyList companies={all} />
 
-      <div className="footer-cta">
-        <p>
+      <div className="mt-8 flex flex-wrap items-center gap-4 rounded-xl border border-dashed p-5">
+        <p className="flex-1 text-xs text-muted-foreground">
           Interviewed somewhere that is not listed, or spotted something wrong? Every field is
           editable and no account is needed.
         </p>
-        <a className="btn" href="/new">
-          Submit a company
-        </a>
+        <Button asChild>
+          <a href="/new">Submit a company</a>
+        </Button>
       </div>
     </>
   )

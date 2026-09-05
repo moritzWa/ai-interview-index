@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 export function RevertButton({ revisionId }: { revisionId: number }) {
   const [busy, setBusy] = useState(false)
@@ -25,10 +26,16 @@ export function RevertButton({ revisionId }: { revisionId: number }) {
 
   return (
     <>
-      <button className="link" type="button" onClick={revert} disabled={busy}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 px-2 text-xs text-muted-foreground"
+        onClick={revert}
+        disabled={busy}
+      >
         {busy ? 'reverting…' : 'revert'}
-      </button>
-      {error && <span className="err small">{error}</span>}
+      </Button>
+      {error && <span className="text-xs text-destructive">{error}</span>}
     </>
   )
 }

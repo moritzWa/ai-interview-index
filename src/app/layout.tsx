@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Button } from '@/components/ui/button'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeToggle } from './theme-toggle'
 import { SITE_URL } from '@/lib/site'
 
@@ -40,34 +42,45 @@ const NO_FLASH = `try{var t=localStorage.getItem('aii-theme');if(t==='light'||t=
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH }} />
       </head>
-      <body>
-        <div className="wrap">
-          <header className="site">
-            <div className="who">
-              <h1>
+      <body className="text-[13px] leading-relaxed antialiased">
+        <TooltipProvider delayDuration={300}>
+        <div className="mx-auto max-w-6xl px-6 pt-10 pb-24">
+          <header className="mb-7 flex items-start gap-6">
+            <div className="min-w-0 flex-1">
+              <h1 className="mb-1 text-lg font-semibold tracking-tight">
                 <a href="/">AI Interview Index</a>
               </h1>
-              <p>
+              <p className="max-w-[62ch] text-muted-foreground">
                 Which companies let you use AI in their coding interviews, which ban it, and which
                 built the interview around it. Anyone can edit; every change is public and
                 revertible.
               </p>
             </div>
-            <nav className="site">
-              <a href="/changes">Recent changes</a>
-              <a className="btn" href="/new">
-                Submit a company
+            <nav className="flex shrink-0 items-center gap-4">
+              <a
+                href="/changes"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Recent changes
               </a>
+              <Button asChild size="sm">
+                <a href="/new">Submit a company</a>
+              </Button>
             </nav>
           </header>
 
-          <p className="masthead">
+          <p className="mb-4 text-xs text-faint">
             Companion to{' '}
-            <a href="https://scalingknowledge.substack.com" target="_blank" rel="noreferrer">
+            <a
+              className="underline underline-offset-2 transition-colors hover:text-foreground"
+              href="https://scalingknowledge.substack.com"
+              target="_blank"
+              rel="noreferrer"
+            >
               Coding Interviews Should Allow AI
             </a>{' '}
             on Scaling Knowledge.
@@ -75,16 +88,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {children}
 
-          <footer className="site">
-            <span className="by">
+          <footer className="mt-12 flex items-center gap-4 border-t pt-5 text-xs text-muted-foreground">
+            <span className="flex-1">
               Built by{' '}
-              <a href="https://moritzw.com" target="_blank" rel="noreferrer">
+              <a
+                className="text-foreground underline underline-offset-2"
+                href="https://moritzw.com"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Moritz Wallawitsch
               </a>
             </span>
             <ThemeToggle />
           </footer>
         </div>
+        </TooltipProvider>
       </body>
     </html>
   )
