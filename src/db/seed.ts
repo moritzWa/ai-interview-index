@@ -56,7 +56,7 @@ const SEED: Seed[] = [
     policy: "no_ai",
     process: "No coding interview at all, in practice.\n\nThe screen was originally a 1h remote pair-programming round in TypeScript, algorithmic, no AI. A candidate pushed back on the no-AI constraint and they dropped the coding round entirely, replacing it with a practical system design conversation about past work. That loop ended in an offer.",
     sourceNote: "Candidate report, Aug 2026",
-    website: "https://www.augustus.io",
+    website: "https://augustus.com/",
     city: "New York",
     industry: "Fintech",
   },
@@ -242,6 +242,18 @@ const SEED: Seed[] = [
     ],
   },
   {
+    name: "OpenAI",
+    policy: "no_ai",
+    process: "AI is off by default in the interview, and permitted only where a specific round says otherwise.\n\nTheir published guide states that expectations vary by interview and that candidates are told in the preparation materials what is allowed. Reports of the engineering loop describe conventional algorithm-heavy screens.",
+    sourceNote: "OpenAI interview guide, plus candidate reports",
+    website: "https://openai.com",
+    city: "San Francisco",
+    industry: "AI research",
+    resources: [
+      { url: "https://openai.com/interview-guide/", title: "OpenAI interview guide" },
+    ],
+  },
+  {
     name: "OpenEvidence",
     policy: "no_ai",
     process: "One-hour LeetCode-style coding interview after the recruiter call.",
@@ -313,6 +325,15 @@ const SEED: Seed[] = [
     website: "https://ramp.com",
     city: "New York",
     industry: "Fintech",
+  },
+  {
+    name: "Rogo",
+    policy: "no_ai",
+    process: "No round in the engineering loop lets candidates use AI.\n\nRaised internally as a question in early 2026 and argued down: the position that carried was that interviews should test how someone reasons through a hard problem unaided, and that learning the tools is trivial enough not to be worth selecting for.",
+    sourceNote: "Internal discussion, Jan 2026",
+    website: "https://rogodata.com",
+    city: "New York",
+    industry: "Finance AI",
   },
   {
     name: "SageOx",
