@@ -77,11 +77,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Companion to{' '}
             <a
               className="underline underline-offset-2 transition-colors hover:text-foreground"
-              href="https://scalingknowledge.substack.com"
+              href="https://scalingknowledge.substack.com/p/the-ai-free-coding-interview-superstition"
               target="_blank"
               rel="noreferrer"
             >
-              Coding Interviews Should Allow AI
+              The AI-Free Coding Interview Superstition
             </a>{' '}
             on Scaling Knowledge.
           </p>

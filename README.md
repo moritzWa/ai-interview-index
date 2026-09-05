@@ -3,8 +3,9 @@
 Which companies let you use AI in their coding interviews, which ban it, and which
 built the interview around it. Live at **[aiinterviewindex.com](https://aiinterviewindex.com)**.
 
-Anyone can edit, no account needed. Companion to a blog post on why coding
-interviews should allow AI.
+Anyone can edit, no account needed. Companion to
+[The AI-Free Coding Interview Superstition](https://scalingknowledge.substack.com/p/the-ai-free-coding-interview-superstition)
+on Scaling Knowledge.
 
 ## Categories
 
