@@ -193,7 +193,7 @@ const SEED: Seed[] = [
   {
     name: "Hanover Park",
     policy: "ai_native",
-    process: "Triage on a real codebase: a long list of reported issues, some genuine and some not, to prioritise and fix in limited time.\n\nAI tooling is assumed throughout. The signal is what you choose to work on and what you correctly ignore, not how fast you can type a fix. Earlier rounds are an office visit with the CEO and a 90-minute session covering system design.",
+    process: "Issue triage on a real codebase, under time pressure. Some of the reported issues are not real.\n\nAI is assumed. The signal is what you choose to fix and what you correctly ignore.",
     sourceNote: "Candidate report, Aug 2026",
     website: "https://www.hanoverpark.com",
     city: "New York",
