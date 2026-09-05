@@ -369,3 +369,13 @@ ul.reslist li { display: flex; align-items: baseline; gap: 8px; }
 ul.reslist a { color: var(--ink); text-underline-offset: 2px; }
 
 .srcdot { color: var(--ink-3); font-size: 11px; margin-left: 6px; }
+
+/* Two lines, then an ellipsis, so a long description reads as trimmed rather
+   than as one row quietly being twice the height of its neighbours. */
+.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

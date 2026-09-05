@@ -281,7 +281,13 @@ export function CompanyList({ companies }: { companies: Company[] }) {
                     {c.name}
                   </a>
                 </td>
-                <td className="pr">{c.process.split('\n')[0]}</td>
+                <td className="pr">
+                  {/* Clamped rather than truncated in JS so the ellipsis lands on a
+                      real line break at whatever width the table happens to be. */}
+                  <span className="clamp" title={c.process.split('\n')[0]}>
+                    {c.process.split('\n')[0]}
+                  </span>
+                </td>
                 <td className="meta">{c.city ?? '—'}</td>
                 <td className="policycol">
                   <PolicyToggle company={c} />
