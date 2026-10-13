@@ -87,7 +87,19 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       </a>
 
       <div className="mt-4 max-w-2xl">
-        <h2 className="text-xl font-semibold tracking-tight">{company.name}</h2>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 className="text-xl font-semibold tracking-tight">{company.name}</h2>
+          {company.website && (
+            <a
+              href={company.website}
+              target="_blank"
+              rel="noreferrer nofollow"
+              className="text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground"
+            >
+              {hostOf(company.website)} ↗
+            </a>
+          )}
+        </div>
         <p className="mt-1 text-xs">
           <span className={cn('font-semibold', LABEL_COLOR[company.policy])}>
             {POLICY_LABELS[company.policy]}

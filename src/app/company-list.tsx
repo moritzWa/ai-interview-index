@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 const SHORT: Record<Policy, string> = { no_ai: 'No AI', has_ai: 'Has AI', ai_native: 'AI-native' }
 
@@ -299,24 +298,15 @@ export function CompanyList({ companies }: { companies: Company[] }) {
                     <Logo company={c} />
                     <span className="truncate">{c.name}</span>
                   </a>
-                  <span className="mt-0.5 line-clamp-2 text-xs font-normal text-muted-foreground sm:hidden">
+                  <span className="mt-0.5 block truncate text-xs font-normal text-faint sm:hidden">
                     {c.process.split('\n')[0]}
                   </span>
                 </TableCell>
                 {/* max-w-0 + w-full is the table idiom for "take the leftover width and
-                    let the text clamp", so this column shrinks before the policy column
-                    is ever pushed off the right edge. */}
-                <TableCell className="hidden w-full max-w-0 whitespace-normal text-muted-foreground sm:table-cell">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {/* Clamped in CSS so the ellipsis lands on a real line break
-                          at whatever width the table happens to be. */}
-                      <span className="line-clamp-2">{c.process.split('\n')[0]}</span>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-sm">
-                      {c.process.split('\n')[0]}
-                    </TooltipContent>
-                  </Tooltip>
+                    truncate", so this column shrinks before the policy column is ever
+                    pushed off the right edge. The full text lives on the company page. */}
+                <TableCell className="hidden w-full max-w-0 text-xs text-faint sm:table-cell">
+                  <span className="block truncate">{c.process.split('\n')[0]}</span>
                 </TableCell>
                 <TableCell className="hidden w-px text-xs whitespace-nowrap text-faint lg:table-cell">
                   {c.city ?? '—'}

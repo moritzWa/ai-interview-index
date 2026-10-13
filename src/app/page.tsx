@@ -73,7 +73,7 @@ export default async function Home() {
           editable and no account is needed.
         </p>
         <Button asChild>
-          <a href="/new">Submit a company</a>
+          <a href="/new">Submit anonymously</a>
         </Button>
       </div>
     </>

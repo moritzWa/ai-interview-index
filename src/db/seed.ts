@@ -32,7 +32,7 @@ const SEED: Seed[] = [
   {
     name: "Applied Compute",
     policy: "no_ai",
-    process: "Two 45-minute coding interviews with AI switched off in the IDE.\n\nThe problems are not LeetCode. They resemble a production problem the team ran into itself.",
+    process: "Two 45-minute coding interviews with AI switched off in the IDE.\n\nThe problems are not LeetCode. They resemble a production problem the team ran into itself. The onsite format has not been reported yet.",
     sourceNote: "Candidate report, Oct 2026",
     website: "https://appliedcompute.com",
     city: "San Francisco",

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { FreshOnReturn } from './fresh-on-return'
 import { ThemeToggle } from './theme-toggle'
 import { SITE_URL } from '@/lib/site'
 
@@ -48,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="text-[13px] leading-relaxed antialiased">
         <TooltipProvider delayDuration={300}>
-        <div className="mx-auto max-w-6xl px-4 pt-8 pb-24 sm:px-6 sm:pt-10">
+        <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pt-8 pb-10 sm:px-6 sm:pt-10">
           <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
             <div className="min-w-0 flex-1">
               <h1 className="mb-1 text-lg font-semibold tracking-tight">
@@ -68,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Recent changes
               </a>
               <Button asChild size="sm">
-                <a href="/new">Submit a company</a>
+                <a href="/new">Submit anonymously</a>
               </Button>
             </nav>
           </header>
@@ -86,7 +87,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             on Scaling Knowledge.
           </p>
 
-          {children}
+          <main className="flex-1">{children}</main>
+          <FreshOnReturn />
 
           <footer className="mt-12 flex items-center gap-4 border-t pt-5 text-xs text-muted-foreground">
             <span className="flex-1">
