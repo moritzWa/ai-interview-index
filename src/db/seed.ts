@@ -30,6 +30,15 @@ const SEED: Seed[] = [
     ],
   },
   {
+    name: "Applied Compute",
+    policy: "no_ai",
+    process: "Two 45-minute coding interviews with AI switched off in the IDE.\n\nThe problems are not LeetCode. They resemble a production problem the team ran into itself.",
+    sourceNote: "Candidate report, Oct 2026",
+    website: "https://appliedcompute.com",
+    city: "San Francisco",
+    industry: "AI infrastructure",
+  },
+  {
     name: "Anthropic",
     policy: "has_ai",
     process: "Live interviews are AI-free unless stated; some take-homes explicitly allow it.\n\nThe documented exception is the performance-engineering take-home, which permits AI on the reasoning that a long-horizon optimisation problem still differentiates people who use it the way they would on the job. Prep with Claude is encouraged.",
