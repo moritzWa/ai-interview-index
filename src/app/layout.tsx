@@ -48,8 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="text-[13px] leading-relaxed antialiased">
         <TooltipProvider delayDuration={300}>
-        <div className="mx-auto max-w-6xl px-6 pt-10 pb-24">
-          <header className="mb-7 flex items-start gap-6">
+        <div className="mx-auto max-w-6xl px-4 pt-8 pb-24 sm:px-6 sm:pt-10">
+          <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
             <div className="min-w-0 flex-1">
               <h1 className="mb-1 text-lg font-semibold tracking-tight">
                 <a href="/">AI Interview Index</a>

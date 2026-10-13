@@ -277,8 +277,8 @@ export function CompanyList({ companies }: { companies: Company[] }) {
           <TableHeader>
             <TableRow className="bg-muted/60 hover:bg-muted/60">
               {header('Company', 'name')}
-              {header('Technical process', 'process')}
-              {header('Location', 'city')}
+              {header('Technical process', 'process', 'hidden sm:table-cell')}
+              {header('Location', 'city', 'hidden lg:table-cell')}
               {header('AI in interviews', 'policy', 'pr-3 text-right')}
             </TableRow>
           </TableHeader>
@@ -292,13 +292,21 @@ export function CompanyList({ companies }: { companies: Company[] }) {
             )}
             {shown.map((c) => (
               <TableRow key={c.id}>
-                <TableCell className="w-px font-semibold whitespace-nowrap">
-                  <a href={`/c/${c.slug}`} className="inline-flex items-center gap-2.5">
+                {/* Below sm the process column is gone, so its first line moves under the
+                    name and this cell takes whatever the policy toggle leaves over. */}
+                <TableCell className="w-px font-semibold whitespace-nowrap max-sm:w-full max-sm:max-w-0 max-sm:whitespace-normal">
+                  <a href={`/c/${c.slug}`} className="inline-flex max-w-full items-center gap-2.5">
                     <Logo company={c} />
-                    {c.name}
+                    <span className="truncate">{c.name}</span>
                   </a>
+                  <span className="mt-0.5 line-clamp-2 text-xs font-normal text-muted-foreground sm:hidden">
+                    {c.process.split('\n')[0]}
+                  </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                {/* max-w-0 + w-full is the table idiom for "take the leftover width and
+                    let the text clamp", so this column shrinks before the policy column
+                    is ever pushed off the right edge. */}
+                <TableCell className="hidden w-full max-w-0 whitespace-normal text-muted-foreground sm:table-cell">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       {/* Clamped in CSS so the ellipsis lands on a real line break
@@ -310,7 +318,7 @@ export function CompanyList({ companies }: { companies: Company[] }) {
                     </TooltipContent>
                   </Tooltip>
                 </TableCell>
-                <TableCell className="w-px text-xs whitespace-nowrap text-faint">
+                <TableCell className="hidden w-px text-xs whitespace-nowrap text-faint lg:table-cell">
                   {c.city ?? '—'}
                 </TableCell>
                 <TableCell className="w-px pr-3 text-right">
