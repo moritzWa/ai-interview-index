@@ -40,6 +40,12 @@ export const companies = pgTable(
     /** Free-text facets, for the VC-portfolio-style filter row. */
     city: text('city'),
     industry: text('industry'),
+    /**
+     * How well known the company is: 1 household name in tech, 2 known in the
+     * industry, 3 everyone else. Drives the default sort. Deliberately not in the
+     * public edit form, so it cannot be gamed; new companies start at 3.
+     */
+    tier: integer('tier').notNull().default(3),
     updatedAt: integer('updated_at')
       .notNull()
       .default(sql`extract(epoch from now())::int`),

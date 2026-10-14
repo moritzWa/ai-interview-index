@@ -81,12 +81,12 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
 
       <a
         href="/"
-        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+        className="mt-10 inline-block text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         ← All companies
       </a>
 
-      <div className="mt-4 max-w-2xl">
+      <div className="mt-8 max-w-2xl">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h2 className="text-xl font-semibold tracking-tight">{company.name}</h2>
           {company.website && (
@@ -100,14 +100,14 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
             </a>
           )}
         </div>
-        <p className="mt-1 text-xs">
+        <p className="mt-3 text-xs">
           <span className={cn('font-semibold', LABEL_COLOR[company.policy])}>
             {POLICY_LABELS[company.policy]}
           </span>{' '}
           <span className="text-faint">{POLICY_BLURBS[company.policy]}</span>
         </p>
 
-        <div className="mt-6 space-y-4 text-[13.5px] leading-relaxed">
+        <div className="mt-8 space-y-4 text-[13.5px] leading-relaxed">
           {company.process ? (
             company.process.split('\n\n').map((para, i) => <p key={i}>{para}</p>)
           ) : (

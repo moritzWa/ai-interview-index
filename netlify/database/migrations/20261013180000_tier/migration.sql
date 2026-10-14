@@ -1,0 +1,1 @@
+ALTER TABLE "companies" ADD COLUMN IF NOT EXISTS "tier" integer DEFAULT 3 NOT NULL;

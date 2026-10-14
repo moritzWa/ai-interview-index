@@ -111,7 +111,7 @@ function PolicyToggle({ company }: { company: Company }) {
   )
 }
 
-type SortKey = 'name' | 'process' | 'city' | 'policy'
+type SortKey = 'tier' | 'name' | 'process' | 'city' | 'policy'
 
 /** Escalating rather than alphabetical, so sorting reads as a spectrum. */
 const POLICY_ORDER: Record<Policy, number> = { no_ai: 0, has_ai: 1, ai_native: 2 }
@@ -121,7 +121,7 @@ export function CompanyList({ companies }: { companies: Company[] }) {
   const [policy, setPolicy] = useState('all')
   const [city, setCity] = useState('all')
   const [industry, setIndustry] = useState('all')
-  const [sort, setSort] = useState<SortKey>('name')
+  const [sort, setSort] = useState<SortKey>('tier')
   const [dir, setDir] = useState<1 | -1>(1)
 
   const cities = useMemo(
@@ -154,8 +154,14 @@ export function CompanyList({ companies }: { companies: Company[] }) {
         .includes(needle)
     })
 
+    // The default order is by how well known the company is, then by name, so the
+    // names people recognise come first and unknown ones sit at the bottom.
     const value = (c: Company) =>
-      sort === 'policy' ? POLICY_ORDER[c.policy] : (c[sort] ?? '').toString().toLowerCase()
+      sort === 'policy'
+        ? POLICY_ORDER[c.policy]
+        : sort === 'tier'
+          ? c.tier
+          : (c[sort] ?? '').toString().toLowerCase()
 
     return [...matched].sort((a, b) => {
       const av = value(a)
