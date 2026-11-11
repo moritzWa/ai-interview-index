@@ -12,6 +12,7 @@ type Seed = {
   website?: string
   city?: string
   industry?: string
+  tier?: number
 }
 
 /** Generated from the live database. */
@@ -432,6 +433,163 @@ const SEED: Seed[] = [
       { url: "https://zapier.com/blog/raising-ai-fluency-bar-in-hiring/", title: "Raising the AI fluency bar in hiring" },
     ],
   },
+  {
+    name: "Amazon",
+    policy: "has_ai",
+    process: "SDE technical assessments now have candidates work with an interactive AI assistant on a real coding platform, to mirror how Amazon engineers work day to day.\n\nAmazon says it designed this to still let candidates show their own skills. The published piece covers the assessment stage; it does not describe the live interview loop.",
+    sourceNote: "Amazon, \"How 3 AI innovations are creating a better experience for candidates\", Jan 2026",
+    website: "https://www.amazon.com",
+    city: "Seattle",
+    industry: "E-commerce",
+    tier: 1,
+    resources: [
+      { url: "https://www.aboutamazon.com/news/workplace/artificial-intelligence-resume-jobs-hiring-amazon", title: "How 3 AI innovations are creating a better experience for candidates" },
+    ],
+  },
+  {
+    name: "DoorDash",
+    policy: "ai_native",
+    process: "The traditional coding round is replaced by a 60-minute, AI-assisted engineering working session on your own machine and IDE. Candidates are asked to use an AI coding agent (Cursor, Claude Code or Codex) and screen share, on a task that looks like real DoorDash work. One-shotting a problem is allowed.\n\nScoring is on how you get oriented, how you use AI and verify its output, how you debug, how you manage scope and how you communicate tradeoffs. Outside rounds designated as AI rounds, the stance is no AI in live interviews unless the interviewer invites it.",
+    sourceNote: "DoorDash careers blog, Mar 2026, and \"Our stance on AI and Interviewing\", Oct 2025",
+    website: "https://www.doordash.com",
+    city: "San Francisco",
+    industry: "Delivery",
+    tier: 1,
+    resources: [
+      { url: "https://careersatdoordash.com/blog/doordash-is-rebuilding-its-engineering-interviews-around-ai/", title: "Why DoorDash is rebuilding its engineering interviews around AI" },
+      { url: "https://careersatdoordash.com/blog/doordash-stance-ai-interviewing/", title: "Our stance on AI and Interviewing" },
+    ],
+  },
+  {
+    name: "Eightfold",
+    policy: "has_ai",
+    process: "The AI Design and Coding round is 60 minutes: candidates build a working prototype of a real-world problem with any AI tool they like (Cursor, ChatGPT, Claude, Copilot).\n\nThere are no restrictions on tools and no penalty for using AI. The score is on outcome and reasoning, including how responsibly you use AI. The post describes this one round, not the rest of the loop.",
+    sourceNote: "Eightfold engineering blog, Oct 2025",
+    website: "https://eightfold.ai",
+    city: "Santa Clara",
+    industry: "HR tech",
+    tier: 3,
+    resources: [
+      { url: "https://eightfold.ai/engineering-blog/rethinking-engineering-interviews-in-the-age-of-ai-from-code-memory-to-ai-mastery/", title: "Rethinking engineering interviews in the age of AI" },
+    ],
+  },
+  {
+    name: "Google",
+    policy: "has_ai",
+    process: "A pilot is adding an approved AI assistant (Gemini) to a code comprehension round, where candidates read, debug and optimize an existing codebase. Interviewers evaluate AI fluency, including prompting, output validation and debugging.\n\nThe pilot covers junior to mid-level roles on select US teams from the second half of 2026, with a wider rollout planned if it works. A Google spokesperson confirmed it. Google's careers pages have said no AI tools in interviews, so outside the pilot, assume no AI.",
+    sourceNote: "Business Insider, May 2026, confirmed by a Google spokesperson",
+    website: "https://www.google.com",
+    city: "Mountain View",
+    industry: "Search and cloud",
+    tier: 1,
+    resources: [
+      { url: "https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5", title: "Google plans to let software engineers use AI assistants in job interviews" },
+    ],
+  },
+  {
+    name: "Instacart",
+    policy: "has_ai",
+    process: "No AI in live interviews unless the interviewer explicitly asks for it. The documented exception is the senior software engineer process, where AI is allowed and encouraged in the Karat Next Gen interview only.\n\nTake-home and virtual assessments must be your own work: AI to organize or proofread is fine, AI to write your code is not.",
+    sourceNote: "Instacart candidate guidelines for AI usage",
+    website: "https://www.instacart.com",
+    city: "San Francisco",
+    industry: "Grocery delivery",
+    tier: 2,
+    resources: [
+      { url: "https://www.instacart.careers/ai-usage-guide", title: "Candidate Guidelines for AI Usage" },
+    ],
+  },
+  {
+    name: "LinkedIn",
+    policy: "no_ai",
+    process: "No AI in live interviews or technical assessments unless the recruiting team says in advance that AI is part of the format for that role. If it is, the recruiter explains what is allowed and how it is assessed.\n\nThe guide does not say which roles or rounds use that exception, so the default is no AI. AI is welcome for resume drafting and interview prep.",
+    sourceNote: "LinkedIn careers, responsible AI usage guide",
+    website: "https://www.linkedin.com",
+    city: "Sunnyvale",
+    industry: "Professional network",
+    tier: 1,
+    resources: [
+      { url: "https://careers.linkedin.com/Howwehire/ai-usage", title: "Collaborating with AI during LinkedIn's hiring process" },
+    ],
+  },
+  {
+    name: "Meta",
+    policy: "ai_native",
+    process: "For select roles, the coding interview runs in CoderPad with a built-in AI assistant, and candidates are expected to use it. The models on offer include Claude, ChatGPT, Gemini and Meta's own, and you pick one during the interview. Design interviews use the same assistant. No outside AI tools are allowed.\n\nMeta calls it the AI-Native Coding Interview and scores problem solving, coding, debugging and collaboration. Candidates get a practice session in the same tool beforehand.",
+    sourceNote: "Meta careers hiring process FAQ",
+    website: "https://www.meta.com",
+    city: "Menlo Park",
+    industry: "Social media",
+    tier: 1,
+    resources: [
+      { url: "https://www.metacareers.com/hiring-process/", title: "Meta hiring process and interview FAQ" },
+    ],
+  },
+  {
+    name: "Pinterest",
+    policy: "has_ai",
+    process: "AI is encouraged only in designated parts of the interview, for example an at-home or virtual assignment, or a section of a live technical screen where you are asked to use an AI tool. There the score is on judgment, prompting, evaluating the AI's suggestions and owning the outcome.\n\nFor any other live interview question, assume AI is not permitted unless told otherwise. Parts of the process explicitly prohibit it to assess foundational knowledge.",
+    sourceNote: "Pinterest careers, \"Our Philosophy on AI in Hiring\"",
+    website: "https://www.pinterest.com",
+    city: "San Francisco",
+    industry: "Social media",
+    tier: 1,
+    resources: [
+      { url: "https://www.pinterestcareers.com/candidate-hub/our-philosophy-on-ai-in-hiring/", title: "Our Philosophy on AI in Hiring" },
+    ],
+  },
+  {
+    name: "Shopify",
+    policy: "has_ai",
+    process: "Pairing interviews over screen share where candidates may use whatever AI tools they want. The head of engineering says candidates without a copilot usually lose to those who have one.\n\nHe scores on whether you review the generated code and catch what is wrong, and wants candidates to use AI heavily but not exclusively. This is from one interview in mid-2025, not a published candidate policy.",
+    sourceNote: "Farhan Thawar, Shopify head of engineering, on The Pragmatic Engineer, Jul 2025",
+    website: "https://www.shopify.com",
+    city: "Ottawa",
+    industry: "E-commerce",
+    tier: 1,
+    resources: [
+      { url: "https://newsletter.pragmaticengineer.com/p/how-ai-is-changing-software-engineering", title: "How AI is changing software engineering at Shopify" },
+    ],
+  },
+  {
+    name: "Snowflake",
+    policy: "no_ai",
+    process: "All coding interviews are done without coding or AI assistants, and AI is not permitted on written assessments, take-home projects or technical exercises. One coding interview is conducted in person.\n\nSnowflake says AI is fine for preparation. It describes the live-coding rule as the current policy.",
+    sourceNote: "Snowflake careers blog, \"AI cheat sheet\"",
+    website: "https://www.snowflake.com",
+    city: "Bozeman",
+    industry: "Data cloud",
+    tier: 1,
+    resources: [
+      { url: "https://careers.snowflake.com/us/en/blogarticle/ai-cheat-sheet-how-and-when-to-use-ai-in-your-snowflake-interview", title: "AI cheat sheet: how and when to use AI in your Snowflake interview" },
+    ],
+  },
+  {
+    name: "Uber",
+    policy: "has_ai",
+    process: "No AI unless your recruiter tells you otherwise, and that includes ChatGPT, response generators and code autocomplete. In some technical interviews you are given an AI agent as part of the coding environment, and the recruiter tells you ahead of time.\n\nWithout that, be ready to walk through your reasoning with no AI help.",
+    sourceNote: "Uber careers interview guide FAQ",
+    website: "https://www.uber.com",
+    city: "San Francisco",
+    industry: "Mobility",
+    tier: 1,
+    resources: [
+      { url: "https://jobs.uber.com/en/uber-interview-guide/backend-engineering-interview-guide/", title: "Backend Engineering Interview Guide" },
+    ],
+  },
+  {
+    name: "Wayfair",
+    policy: "has_ai",
+    process: "No AI in phone and virtual interviews unless you are told you may. Some live coding assessments are designed to include generative AI tools such as ChatGPT, Gemini and Copilot, and for certain roles Wayfair encourages transparent use.\n\nIf you use AI you must disclose it and explain your prompts and technical choices. Using it beyond the guidelines can get you disqualified.",
+    sourceNote: "Wayfair AI guidelines",
+    website: "https://www.wayfair.com",
+    city: "Boston",
+    industry: "E-commerce",
+    tier: 2,
+    resources: [
+      { url: "https://www.aboutwayfair.com/ai-guidelines", title: "AI Guidelines" },
+    ],
+  },
 ]
 
 async function main() {
@@ -445,7 +603,7 @@ async function main() {
       resources: s.resources ? JSON.stringify(s.resources) : null,
       website: s.website ?? null, city: s.city ?? null, industry: s.industry ?? null,
     }
-    const [created] = await db.insert(companies).values({ ...payload, slug }).returning()
+    const [created] = await db.insert(companies).values({ ...payload, slug, ...(s.tier ? { tier: s.tier } : {}) }).returning()
     await db.insert(revisions).values({
       companyId: created.id, kind: 'create', before: null,
       after: JSON.stringify(payload), summary: 'seeded',
