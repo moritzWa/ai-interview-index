@@ -252,8 +252,8 @@ const SEED: Seed[] = [
   },
   {
     name: "OpenAI",
-    policy: "no_ai",
-    process: "AI is off by default in the interview, and permitted only where a specific round says otherwise.\n\nTheir published guide states that expectations vary by interview and that candidates are told in the preparation materials what is allowed. Reports of the engineering loop describe conventional algorithm-heavy screens.",
+    policy: "has_ai",
+    process: "Expectations for AI vary by interview. Some formats intentionally allow AI tools and others are designed to assess independent problem-solving without them.\n\nCandidates are told what is allowed in their interview preparation materials, and the guide says to ask the recruiter if unsure. Reports of the engineering loop describe conventional algorithm-heavy screens.",
     sourceNote: "OpenAI interview guide, plus candidate reports",
     website: "https://openai.com",
     city: "San Francisco",
